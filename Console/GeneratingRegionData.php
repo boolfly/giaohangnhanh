@@ -3,6 +3,7 @@
 namespace Boolfly\GiaoHangNhanh\Console;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
+use Boolfly\GiaoHangNhanh\Model\DistrictProvider;
 use Magento\Directory\Model\RegionFactory;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -28,21 +29,29 @@ class GeneratingRegionData extends Command
     private $regionFactory;
 
     /**
+     * @var DistrictProvider
+     */
+    private $districtProvider;
+
+    /**
      * GeneratingRegionData constructor.
      * @param Service $service
      * @param ResourceConnection $resourceConnection
      * @param RegionFactory $regionFactory
+     * @param DistrictProvider $districtProvider
      * @param string|null $name
      */
     public function __construct(
         Service $service,
         ResourceConnection $resourceConnection,
         RegionFactory $regionFactory,
+        DistrictProvider $districtProvider,
         $name = null
     ) {
         $this->service = $service;
         $this->resourceConnection = $resourceConnection;
         $this->regionFactory = $regionFactory;
+        $this->districtProvider = $districtProvider;
         parent::__construct($name);
     }
 
@@ -60,7 +69,7 @@ class GeneratingRegionData extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $response = $this->service->getDistrictList();
+        $response = $this->districtProvider->getDistrictList();
         if (true === $this->service->checkResponse($response)) {
             $output->writeln('<info>Generating data. Please wait...</info>');
             $responseObject = $response['response_object'];

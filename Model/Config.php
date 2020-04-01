@@ -24,6 +24,7 @@ class Config
     const GETTING_DISTRICTS_URL = 'carriers/giaohangnhanh_standard/get_districts_url';
     const NOTE_CODE = 'carriers/giaohangnhanh_standard/note_code';
     const DISTRICT = 'carriers/giaohangnhanh_standard/district';
+    const GETTING_SERVICES_URL = 'carriers/giaohangnhanh_standard/get_services_url';
 
     /**
      * @var int
@@ -95,6 +96,15 @@ class Config
     public function getGettingDistrictsUrl()
     {
         return $this->getConfig(self::GETTING_DISTRICTS_URL);
+    }
+
+    /**
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
+    public function getGettingServicesUrl()
+    {
+        return $this->getConfig(self::GETTING_SERVICES_URL);
     }
 
     /**

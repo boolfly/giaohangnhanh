@@ -31,6 +31,7 @@
                 <calculate_fee_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CalculateFee</calculate_fee_url>
                 <sync_order_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CreateOrder</sync_order_url>
                 <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
+                <get_services_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/FindAvailableServices</get_services_url>
                 <payment_type>2</payment_type>
                 <note_code>CHOXEMHANGKHONGTHU</note_code>
             </giaohangnhanh_standard>

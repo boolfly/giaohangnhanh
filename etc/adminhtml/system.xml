@@ -129,6 +129,9 @@
                 <field id="get_districts_url" translate="label" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Getting District List Api Url</label>
                 </field>
+                <field id="get_services_url" translate="label" type="text" sortOrder="122" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Getting Available Services Api Url</label>
+                </field>
                 <field id="payment_type" translate="label" type="select" sortOrder="125" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Payment Type</label>
                     <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\PaymentType</source_model>

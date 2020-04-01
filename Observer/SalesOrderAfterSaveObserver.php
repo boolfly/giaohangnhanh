@@ -2,10 +2,12 @@
 
 namespace Boolfly\GiaoHangNhanh\Observer;
 
+use Exception;
 use Magento\Customer\Model\AddressFactory;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Model\QuoteRepository;
+use Psr\Log\LoggerInterface;
 
 class SalesOrderAfterSaveObserver implements ObserverInterface
 {
@@ -20,14 +22,22 @@ class SalesOrderAfterSaveObserver implements ObserverInterface
     protected $customerAddressFactory;
 
     /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
      * SalesOrderAfterSaveObserver constructor.
      * @param QuoteRepository $quoteRepository
      * @param AddressFactory $customerAddressFactory
+     * @param LoggerInterface $logger
      */
     public function __construct(
         QuoteRepository $quoteRepository,
-        AddressFactory $customerAddressFactory
+        AddressFactory $customerAddressFactory,
+        LoggerInterface $logger
     ) {
+        $this->logger = $logger;
         $this->quoteRepository = $quoteRepository;
         $this->customerAddressFactory = $customerAddressFactory;
     }
@@ -40,7 +50,14 @@ class SalesOrderAfterSaveObserver implements ObserverInterface
         /** @var \Magento\Sales\Model\Order $order */
         $order = $observer->getEvent()->getOrder();
         $quote = $this->quoteRepository->getActive($order->getQuoteId());
-        $address = $this->customerAddressFactory->create()->load($quote->getShippingAddress()->getCustomerAddressId());
-        $address->setData('district', $quote->getDistrict())->save();
+        $address = $this->customerAddressFactory->create()
+            ->load($quote->getShippingAddress()->getCustomerAddressId());
+
+        try {
+            $address->setData('district', $quote->getDistrict());
+            $address->save();
+        } catch (Exception $e) {
+            $this->logger->error(__('Can\'t set district for customer address.'));
+        }
     }
 }

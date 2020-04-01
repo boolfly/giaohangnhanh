@@ -3,6 +3,8 @@
 namespace Boolfly\GiaoHangNhanh\Model\Carrier;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
+use Boolfly\GiaoHangNhanh\Model\ServiceProvider;
+use Exception;
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
 use Magento\Checkout\Model\Session;
 use Magento\Customer\Model\AddressFactory;
@@ -82,6 +84,16 @@ class GHN extends AbstractCarrier implements CarrierInterface
     private $customerAddressFactory;
 
     /**
+     * @var ServiceProvider
+     */
+    private $serviceProvider;
+
+    /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * GHN constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param ErrorFactory $rateErrorFactory
@@ -94,6 +106,8 @@ class GHN extends AbstractCarrier implements CarrierInterface
      * @param ShippingInformationInterface $addressInformation
      * @param Session $session
      * @param AddressFactory $customerAddressFactory
+     * @param ServiceProvider $serviceProvider
+     * @param Config $config
      * @param array $data
      */
     public function __construct(
@@ -108,6 +122,8 @@ class GHN extends AbstractCarrier implements CarrierInterface
         ShippingInformationInterface $addressInformation,
         Session $session,
         AddressFactory $customerAddressFactory,
+        ServiceProvider $serviceProvider,
+        Config $config,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
@@ -119,6 +135,8 @@ class GHN extends AbstractCarrier implements CarrierInterface
         $this->addressInformation = $addressInformation;
         $this->session = $session;
         $this->customerAddressFactory = $customerAddressFactory;
+        $this->serviceProvider = $serviceProvider;
+        $this->config = $config;
         $this->weightUnit = $scopeConfig->getValue(
             Data::XML_PATH_WEIGHT_UNIT,
             ScopeInterface::SCOPE_STORE
@@ -213,7 +231,16 @@ class GHN extends AbstractCarrier implements CarrierInterface
         $serviceId = $this->getAvailableServices($request);
         $request['ServiceID'] = $serviceId;
         $this->session->getQuote()->setData('shipping_service_id', $serviceId);
-        $response = $this->restService->estimateShippingCost($request)['response_object'];
+
+        $response = $this->restService->makeRequest(
+            $this->config->getCalculatingFeeUrl(),
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json'
+                ],
+                'json' => $request
+            ]
+        )['response_object'];
 
         return !empty($response->data->CalculatedFee) ? $response->data->CalculatedFee : null;
     }
@@ -221,10 +248,11 @@ class GHN extends AbstractCarrier implements CarrierInterface
     /**
      * @param $request
      * @return string
+     * @throws Exception
      */
     private function getAvailableServices($request)
     {
-        $response = $this->restService->getAvailableServices($request)['response_object']->data;
+        $response = $this->serviceProvider->getAvailableServices($request)['response_object']->data;
 
         if (is_array($response)) {
             foreach ($response as $serviceItem) {

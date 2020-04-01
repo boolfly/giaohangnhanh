@@ -3,6 +3,7 @@
 namespace Boolfly\GiaoHangNhanh\Observer;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
+use Boolfly\GiaoHangNhanh\Model\Order\Processor;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Model\QuoteRepository;
@@ -20,15 +21,23 @@ class SalesOrderAfterPlaceObserver implements ObserverInterface
     private $quoteRepository;
 
     /**
+     * @var Processor
+     */
+    private $orderProcessor;
+
+    /**
      * SalesOrderAfterPlaceObserver constructor.
      * @param Service $service
+     * @param Processor $orderProcessor
      * @param QuoteRepository $quoteRepository
      */
     public function __construct(
         Service $service,
+        Processor $orderProcessor,
         QuoteRepository $quoteRepository
     ) {
         $this->service = $service;
+        $this->orderProcessor = $orderProcessor;
         $this->quoteRepository = $quoteRepository;
     }
 
@@ -42,6 +51,6 @@ class SalesOrderAfterPlaceObserver implements ObserverInterface
         $quote = $this->quoteRepository->getActive($order->getQuoteId());
         $order->setDistrict($quote->getDistrict());
         $order->setShippingServiceId($quote->getShippingServiceId());
-        $this->service->syncOrder($order);
+        $this->orderProcessor->syncOrder($order);
     }
 }
