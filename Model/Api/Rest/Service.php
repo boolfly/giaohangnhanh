@@ -2,14 +2,9 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest;
 
-use Boolfly\GiaoHangNhanh\Model\Config;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Sales\Model\Order;
-use Magento\Store\Model\Information;
-use Magento\Store\Model\StoreManagerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Zend\Json\Json;
@@ -52,132 +47,14 @@ class Service
     private $log;
 
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var Information
-     */
-    private $storeInformation;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * Service constructor.
      * @param LoggerInterface $log
-     * @param Config $config
-     * @param Information $storeInformation
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        LoggerInterface $log,
-        Config $config,
-        Information $storeInformation,
-        StoreManagerInterface $storeManager
+        LoggerInterface $log
     ) {
         $this->log = $log;
-        $this->config = $config;
-        $this->storeInformation = $storeInformation;
-        $this->storeManager = $storeManager;
         $this->client = new Client();
-    }
-
-    /**
-     * @return array|ResponseInterface
-     * @throws NoSuchEntityException
-     * @throws Exception
-     */
-    public function getDistrictList()
-    {
-        $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => ['token' => $this->config->getApiToken()]
-        ];
-
-        return $this->makeRequest($this->config->getGettingDistrictsUrl(), $data);
-    }
-
-    /**
-     * @param $request
-     * @return array|ResponseInterface
-     * @throws NoSuchEntityException
-     * @throws Exception
-     */
-    public function estimateShippingCost($request)
-    {
-        $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => $request
-        ];
-
-        return $this->makeRequest($this->config->getCalculatingFeeUrl(), $data);
-    }
-
-    public function getAvailableServices($request)
-    {
-        $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => $request
-        ];
-
-        return $this->makeRequest('https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/FindAvailableServices', $data);
-    }
-
-    /**
-     * @param Order $order
-     * @return array|ResponseInterface
-     * @throws NoSuchEntityException
-     * @throws Exception
-     */
-    public function syncOrder(Order $order)
-    {
-        $config = $this->config;
-        $weightRate = $config->getWeightUnit() == 'kgs' ? Config::KGS_G : Config::LBS_G;
-        $store = $this->storeManager->getStore();
-        $storeInfo = $this->storeInformation->getStoreInformationObject($store);
-        $storeFormattedAddress = $this->storeInformation->getFormattedAddress($store);
-        $storeDistrict = (int)$config->getStoreDistrict();
-        $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => [
-                'token' => $config->getApiToken(),
-                'PaymentTypeID' => $config->getPaymentType(),
-                'FromDistrictID' => $storeDistrict,
-                'ToDistrictID' => (int)$order->getDistrict(),
-                'ClientContactName' => $storeInfo->getName(),
-                'ClientContactPhone' => $storeInfo->getPhone(),
-                'ClientAddress' => $storeFormattedAddress,
-                'CustomerName' => $order->getCustomerName(),
-                'CustomerPhone' => $order->getShippingAddress()->getTelephone(),
-                'ShippingAddress' => $order->getShippingAddress()->getStreetLine(1),
-                'NoteCode' => $config->getNoteCode(),
-                'ServiceID' => $order->getShippingServiceId(),
-                'Weight' => $order->getWeight() * $weightRate,
-                'Length' => 10,
-                'Width' => 10,
-                'Height' => 10,
-                'CoDAmount' => 0,
-                'ReturnContactName' => $storeInfo->getName(),
-                'ReturnContactPhone' => $storeInfo->getPhone(),
-                'ReturnAddress' => $storeFormattedAddress,
-                'ReturnDistrictID' => $storeDistrict,
-                'ExternalReturnCode' => $storeInfo->getName()
-            ]
-        ];
-
-        return $this->makeRequest($config->getSynchronizingOrderUrl(), $data);
     }
 
     /**
@@ -187,7 +64,7 @@ class Service
      * @return array|ResponseInterface
      * @throws Exception
      */
-    private function makeRequest($url, $options = [], $method = self::POST)
+    public function makeRequest($url, $options = [], $method = self::POST)
     {
         $response = [
             'is_successful' => false
