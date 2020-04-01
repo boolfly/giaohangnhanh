@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <carriers>
+            <giaohangnhanh_express>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Express</model>
+                <name>Giao Hang Nhanh(Express)</name>
+                <price>10.00</price>
+                <title>Giao Hang Nhanh</title>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+                <api_token>TokenStaging</api_token>
+                <calculate_fee_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CalculateFee</calculate_fee_url>
+                <sync_order_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CreateOrder</sync_order_url>
+                <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
+                <payment_type>2</payment_type>
+                <note_code>CHOXEMHANGKHONGTHU</note_code>
+            </giaohangnhanh_express>
+            <giaohangnhanh_standard>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Standard</model>
+                <name>Giao Hang Nhanh(Standard)</name>
+                <price>10.00</price>
+                <title>Giao Hang Nhanh</title>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+                <api_token>TokenStaging</api_token>
+                <calculate_fee_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CalculateFee</calculate_fee_url>
+                <sync_order_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CreateOrder</sync_order_url>
+                <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
+                <payment_type>2</payment_type>
+                <note_code>CHOXEMHANGKHONGTHU</note_code>
+            </giaohangnhanh_standard>
+        </carriers>
+    </default>
+</config>

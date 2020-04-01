@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_place_after">
+        <observer name="send_order_to_giaohangnhanh" instance="Boolfly\GiaoHangNhanh\Observer\SalesOrderAfterPlaceObserver"/>
+    </event>
+    <event name="sales_order_save_after">
+        <observer name="set_district_for_customer_address" instance="Boolfly\GiaoHangNhanh\Observer\SalesOrderAfterSaveObserver"/>
+    </event>
+</config>
