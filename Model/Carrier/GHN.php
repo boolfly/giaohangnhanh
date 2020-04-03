@@ -10,12 +10,12 @@ use Magento\Checkout\Model\Session;
 use Magento\Customer\Model\AddressFactory;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Serialize\SerializerInterface;
+use Magento\Quote\Model\Quote;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Magento\Store\Model\Information;
-use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
-use Magento\Directory\Helper\Data;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Quote\Model\Quote\Address\RateRequest;
@@ -59,11 +59,6 @@ class GHN extends AbstractCarrier implements CarrierInterface
     private $storeManager;
 
     /**
-     * @var string
-     */
-    private $weightUnit;
-
-    /**
      * @var Service
      */
     private $restService;
@@ -94,6 +89,11 @@ class GHN extends AbstractCarrier implements CarrierInterface
     private $config;
 
     /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    /**
      * GHN constructor.
      * @param ScopeConfigInterface $scopeConfig
      * @param ErrorFactory $rateErrorFactory
@@ -108,6 +108,7 @@ class GHN extends AbstractCarrier implements CarrierInterface
      * @param AddressFactory $customerAddressFactory
      * @param ServiceProvider $serviceProvider
      * @param Config $config
+     * @param SerializerInterface $serializer
      * @param array $data
      */
     public function __construct(
@@ -124,6 +125,7 @@ class GHN extends AbstractCarrier implements CarrierInterface
         AddressFactory $customerAddressFactory,
         ServiceProvider $serviceProvider,
         Config $config,
+        SerializerInterface $serializer,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
@@ -137,10 +139,7 @@ class GHN extends AbstractCarrier implements CarrierInterface
         $this->customerAddressFactory = $customerAddressFactory;
         $this->serviceProvider = $serviceProvider;
         $this->config = $config;
-        $this->weightUnit = $scopeConfig->getValue(
-            Data::XML_PATH_WEIGHT_UNIT,
-            ScopeInterface::SCOPE_STORE
-        );
+        $this->serializer = $serializer;
     }
 
     /**
@@ -185,52 +184,27 @@ class GHN extends AbstractCarrier implements CarrierInterface
      * @return float|null
      * @throws NoSuchEntityException
      * @throws LocalizedException
+     * @throws Exception
      */
     private function estimateShippingCost(RateRequest $request)
     {
-        $rate = $this->weightUnit == 'kgs' ? Config::KGS_G : Config::LBS_G;
-        $data = json_decode(file_get_contents('php://input'), true);
         $quote = $this->session->getQuote();
-        $districtId = '';
-
-        if (!empty($data['address'])) {
-            $customAttributes = $data['address']['custom_attributes'];
-        } elseif (!empty($data['addressInformation'])) {
-            $customAttributes = $data['addressInformation']['shipping_address']['customAttributes'];
-        } else {
-            $customAttributes = null;
-        }
-
-        if (null !== $customAttributes) {
-            foreach ($customAttributes as $attribute) {
-                if ($attribute['attribute_code'] == 'district') {
-                    $districtId = $attribute['value'];
-                    break;
-                }
-            }
-        }
-
-        if (!$districtId) {
-            $customerAddress = $this->customerAddressFactory->create();
-
-            if (!empty($data['addressId'])) {
-                $districtId = $customerAddress->load($data['addressId'])->getDistrict();
-            } elseif ($customerAddressId = $quote->getShippingAddress()->getCustomerAddressId()) {
-                $districtId = $customerAddress->load($customerAddressId)->getDistrict();
-            } else {
-                $districtId = $quote->getDistrict();
-            }
-        }
-
+        $rate = $this->config->getWeightUnit() == 'kgs' ? Config::KGS_G : Config::LBS_G;
         $request = [
             'token' => 'TokenStaging',
             'Weight' => $request->getPackageWeight() * $rate,
-            'FromDistrictID' => 1443,
-            'ToDistrictID' => (int)$districtId
+            'FromDistrictID' => (int)$this->config->getStoreDistrict(),
+            'ToDistrictID' => (int)$this->getDistrictId($quote)
         ];
         $serviceId = $this->getAvailableServices($request);
         $request['ServiceID'] = $serviceId;
-        $this->session->getQuote()->setData('shipping_service_id', $serviceId);
+        $quote->setData('shipping_service_id', $serviceId);
+
+        try {
+            $quote->save();
+        } catch (Exception $e) {
+            $this->_logger->error(__('Can\'t save quote.'));
+        }
 
         $response = $this->restService->makeRequest(
             $this->config->getCalculatingFeeUrl(),
@@ -267,5 +241,51 @@ class GHN extends AbstractCarrier implements CarrierInterface
         }
 
         return '';
+    }
+
+    /**
+     * @param Quote $quote
+     * @return mixed|string
+     * @throws Exception
+     */
+    private function getDistrictId(Quote $quote)
+    {
+        $data = $this->serializer->unserialize(file_get_contents('php://input'));
+        $districtId = '';
+
+        //After selecting shipping method and go to payment step
+        if (!empty($quote->getDistrict())) {
+            $districtId = $quote->getDistrict();
+        } else {
+            //If the shipping address is new
+            if (!empty($data['address'])) {
+                $customAttributes = $data['address']['custom_attributes'];
+
+                if (null !== $customAttributes) {
+                    foreach ($customAttributes as $attribute) {
+                        if ($attribute['attribute_code'] == 'district') {
+                            $districtId = $attribute['value'];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //If existing shipping address has been selected
+            if (!empty($data['addressId'])) {
+                $customerAddress = $this->customerAddressFactory->create()->load($data['addressId']);
+
+                if ($customerAddress->getId()) {
+                    $districtId = $customerAddress->getDistrict();
+                }
+            }
+
+            //Set districtId to quote, this value will be used in payment step
+            if (!$quote->getDistrict()) {
+                $quote->setDistrict($districtId);
+            }
+        }
+
+        return $districtId;
     }
 }
