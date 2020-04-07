@@ -6,6 +6,8 @@ use Boolfly\GiaoHangNhanh\Model\Carrier\GHN;
 
 class Standard extends GHN
 {
+    const CODE = 'giaohangnhanh_standard';
+
     /**
      * @var string
      */
