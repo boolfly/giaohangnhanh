@@ -12,13 +12,15 @@
         </constraint>
     </table>
     <table name="sales_order" resource="sales" engine="innodb">
-        <column xsi:type="varchar" name="district" nullable="true" length="11" comment="Custom District"/>
+        <column xsi:type="smallint" name="ghn_status" nullable="true" default="0" unsigned="false" identity="false"
+                comment="Giaohangnhanh status"/>
     </table>
-    <table name="quote" resource="checkout" engine="innodb">
-        <column xsi:type="varchar" name="district" nullable="true" length="11" comment="Custom District"/>
+    <table name="quote_address" resource="checkout" engine="innodb">
+        <column xsi:type="varchar" name="district" nullable="true" length="11" comment="District"/>
         <column xsi:type="varchar" name="shipping_service_id" nullable="true" length="11" comment="Shipping Service ID"/>
     </table>
     <table name="sales_order_grid" resource="sales" engine="innodb">
-        <column xsi:type="varchar" name="district" nullable="true" length="11" comment="Custom District"/>
+        <column xsi:type="smallint" name="ghn_status" nullable="true" default="0" unsigned="false" identity="false"
+                comment="Giaohangnhanh status"/>
     </table>
 </schema>
