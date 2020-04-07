@@ -11,6 +11,7 @@ use Magento\Store\Model\StoreManagerInterface;
 
 class Config
 {
+    const GHN_CODE = 'giaohangnhanh';
     const LBS_G = 453.59237;
     const KGS_G = 1000;
     const IS_ACTIVE = 'active';

@@ -11,7 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GeneratingRegionData extends Command
+class GenerateRegionCommand extends Command
 {
     /**
      * @var Service

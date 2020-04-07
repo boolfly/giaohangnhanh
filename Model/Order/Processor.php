@@ -6,6 +6,7 @@ use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Exception;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Quote\Model\Quote\AddressFactory;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
@@ -34,31 +35,39 @@ class Processor
     private $apiService;
 
     /**
+     * @var AddressFactory
+     */
+    private $addressFactory;
+
+    /**
      * Processor constructor.
      * @param Config $config
      * @param Service $apiService
      * @param StoreManagerInterface $storeManager
      * @param Information $storeInformation
+     * @param AddressFactory $addressFactory
      */
     public function __construct(
         Config $config,
         Service $apiService,
         StoreManagerInterface $storeManager,
-        Information $storeInformation
+        Information $storeInformation,
+        AddressFactory $addressFactory
     ) {
         $this->config = $config;
         $this->apiService = $apiService;
         $this->storeManager = $storeManager;
         $this->storeInformation = $storeInformation;
+        $this->addressFactory = $addressFactory;
     }
 
     /**
      * @param Order $order
+     * @param array $additionalData
      * @return array|ResponseInterface
      * @throws NoSuchEntityException
-     * @throws Exception
      */
-    public function syncOrder(Order $order)
+    public function syncOrder(Order $order, $additionalData)
     {
         $config = $this->config;
         $weightRate = $config->getWeightUnit() == 'kgs' ? Config::KGS_G : Config::LBS_G;
@@ -66,6 +75,8 @@ class Processor
         $storeInfo = $this->storeInformation->getStoreInformationObject($store);
         $storeFormattedAddress = $this->storeInformation->getFormattedAddress($store);
         $storeDistrict = (int)$config->getStoreDistrict();
+        $address = $this->addressFactory->create()->load($order->getQuoteAddressId());
+
         $data = [
             'headers' => [
                 'Content-Type' => 'application/json'
@@ -74,7 +85,7 @@ class Processor
                 'token' => $config->getApiToken(),
                 'PaymentTypeID' => $config->getPaymentType(),
                 'FromDistrictID' => $storeDistrict,
-                'ToDistrictID' => (int)$order->getDistrict(),
+                'ToDistrictID' => (int)$additionalData['district'],
                 'ClientContactName' => $storeInfo->getName(),
                 'ClientContactPhone' => $storeInfo->getPhone(),
                 'ClientAddress' => $storeFormattedAddress,
@@ -82,7 +93,7 @@ class Processor
                 'CustomerPhone' => $order->getShippingAddress()->getTelephone(),
                 'ShippingAddress' => $order->getShippingAddress()->getStreetLine(1),
                 'NoteCode' => $config->getNoteCode(),
-                'ServiceID' => $order->getShippingServiceId(),
+                'ServiceID' => $additionalData['shipping_service_id'],
                 'Weight' => $order->getWeight() * $weightRate,
                 'Length' => 10,
                 'Width' => 10,
