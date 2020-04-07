@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <type name="Boolfly\GiaoHangNhanh\Console\GeneratingRegionData">
+    <type name="Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand">
         <arguments>
             <!-- configure the command name via constructor $name argument -->
             <argument name="name" xsi:type="string">region:generate</argument>
@@ -9,8 +9,24 @@
     <type name="Magento\Framework\Console\CommandListInterface">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="generate_region_data" xsi:type="object">Boolfly\GiaoHangNhanh\Console\GeneratingRegionData</item>
+                <item name="generate_region_data" xsi:type="object">
+                    Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand
+                </item>
             </argument>
         </arguments>
+    </type>
+    <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid" type="Magento\Sales\Model\ResourceModel\Grid">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="ghn_status" xsi:type="string">sales_order.ghn_status</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="SaveAddressInformationBefore" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Model\ShippingInformationManagement" sortOrder="22"/>
+    </type>
+    <type name="Magento\Quote\Model\ShippingMethodManagement">
+        <plugin name="EstimateByAddressIdBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByAddressIdBefore" sortOrder="23"/>
+        <plugin name="EstimateByExtendedAddressBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByExtendedAddressBefore" sortOrder="23"/>
     </type>
 </config>
