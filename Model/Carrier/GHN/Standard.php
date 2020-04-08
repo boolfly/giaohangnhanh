@@ -6,7 +6,7 @@ use Boolfly\GiaoHangNhanh\Model\Carrier\GHN;
 
 class Standard extends GHN
 {
-    const CODE = 'giaohangnhanh_standard';
+    const SERVICE_NAME = 'Chuẩn';
 
     /**
      * @var string

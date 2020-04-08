@@ -24,6 +24,8 @@ use Magento\Shipping\Model\Rate\ResultFactory;
 
 abstract class GHN extends AbstractCarrier implements CarrierInterface
 {
+    const SERVICE_NAME = 'GHN';
+
     /**
      * @var string
      */
@@ -47,27 +49,27 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     /**
      * @var Service
      */
-    private $restService;
+    protected $restService;
 
     /**
      * @var ServiceProvider
      */
-    private $serviceProvider;
+    protected $serviceProvider;
 
     /**
      * @var Config
      */
-    private $config;
+    protected $config;
 
     /**
      * @var QuoteRepository
      */
-    private $quoteRepository;
+    protected $quoteRepository;
 
     /**
      * @var array
      */
-    private $availableServices = [];
+    protected $availableServices = [];
 
     /**
      * GHN constructor.
@@ -164,7 +166,9 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
                 'ToDistrictID' => (int)$districtId
             ];
 
-            if ($serviceId = $this->getAvailableService($requestBody)) {
+            $this->availableServices = $this->serviceProvider->getAvailableServices($requestBody);
+
+            if ($serviceId = $this->getAvailableService()) {
                 $requestBody['ServiceID'] = $serviceId;
 
                 if ($request->getLimitCarrier()) {
@@ -197,37 +201,15 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     }
 
     /**
-     * @param $request
      * @return string
-     * @throws Exception
      */
-    private function getAvailableService($request)
+    protected function getAvailableService()
     {
-        if (empty($this->availableServices)) {
-            $response = $this->serviceProvider->getAvailableServices($request);
-
-            if ($this->restService->checkResponse($response)) {
-                $data = $response['response_object']->data;
-                $this->availableServices = is_array($data) ? $data : [];
-            }
-        }
-
         if (count($this->availableServices)) {
             foreach ($this->availableServices as $serviceItem) {
                 if (!empty($serviceItem->Name)) {
 
-                    switch ($this->_code) {
-                        case Express::CODE:
-                            $serviceType = 'Nhanh';
-                            break;
-                        case Standard::CODE:
-                            $serviceType = 'Chuẩn';
-                            break;
-                        default:
-                            $serviceType = 'Chuẩn';
-                    }
-
-                    if ($serviceItem->Name == $serviceType) {
+                    if ($serviceItem->Name == static::SERVICE_NAME) {
                         return $serviceItem->ServiceID;
                     }
                 }
