@@ -40,10 +40,12 @@ class EstimateByExtendedAddressBefore
         $checkoutFields = $address->getExtensionAttributes()->getCheckoutFields();
         $district = '';
 
-        foreach ($checkoutFields as $field) {
-            if ($field->getAttributeCode() == 'district') {
-                $district = $field->getValue();
-                break;
+        if ($checkoutFields) {
+            foreach ($checkoutFields as $field) {
+                if ($field->getAttributeCode() == 'district') {
+                    $district = $field->getValue();
+                    break;
+                }
             }
         }
 

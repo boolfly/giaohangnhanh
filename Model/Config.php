@@ -19,7 +19,7 @@ class Config
     const NAME = 'name';
     const SALLOWSPECIFIC = 'sallowspecific';
     const API_TOKEN = 'carriers/giaohangnhanh_standard/api_token';
-    const PAYMENT_TYPE = 'payment_type';
+    const PAYMENT_TYPE = 'carriers/giaohangnhanh_standard/payment_type';
     const CALCULATING_FEE_URL = 'carriers/giaohangnhanh_standard/calculate_fee_url';
     const SYNCHRONIZING_ORDER_URL = 'carriers/giaohangnhanh_standard/sync_order_url';
     const GETTING_DISTRICTS_URL = 'carriers/giaohangnhanh_standard/get_districts_url';

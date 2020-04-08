@@ -14,15 +14,6 @@ define([
             }
         },
 
-        initialize: function () {
-            this._super();
-            let district = $('[name="custom_attributes[district]"]');
-            district.on('change', function() {
-                alert('kkk');
-            });
-
-        },
-
         update: function (value) {
             let district = $('[name="custom_attributes[district]"]');
             let districtList = checkoutConfigDistricts[parseInt(value)];

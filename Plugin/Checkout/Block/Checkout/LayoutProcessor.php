@@ -21,7 +21,7 @@ class LayoutProcessor
             'label' => __('District'),
             'provider' => 'checkoutProvider',
             'visible' => true,
-            'validation' => ['required-entry' => true],
+            'validation' => ['required-entry' => false],
             'sortOrder' => 255,
             'id' => 'district',
             'options' => [
