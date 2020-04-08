@@ -12,7 +12,7 @@ use Magento\Framework\Event\ObserverInterface;
 use Magento\Quote\Model\QuoteRepository;
 use Psr\Log\LoggerInterface;
 
-class SalesOrderAfterSaveObserver implements ObserverInterface
+class SalesOrderPlaceAfterSObserver implements ObserverInterface
 {
     const GHN_STATUS_FAIL = 0;
     const GHN_STATUS_SUCCESS = 1;
@@ -85,15 +85,6 @@ class SalesOrderAfterSaveObserver implements ObserverInterface
                 $order->setData('ghn_status', self::GHN_STATUS_SUCCESS);
             } else {
                 $order->setData('ghn_status', self::GHN_STATUS_FAIL);
-            }
-
-            try {
-                $order->save();
-            } catch (Exception $e) {
-                $this->logger->error(__(
-                    'Can\'t send order with increment ID %1 to giaohangnhanh.',
-                    $order->getIncrementId()
-                ));
             }
 
             if ($customerAddressId = $shippingAddress->getCustomerAddressId()) {
