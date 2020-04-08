@@ -48,14 +48,10 @@ class DistrictProvider
      */
     public function getDistrictList()
     {
-        $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => ['token' => $this->config->getApiToken()]
-        ];
-
-        return $this->apiService->makeRequest($this->config->getGettingDistrictsUrl(), $data);
+        return $this->apiService->makeRequest(
+            $this->config->getGettingDistrictsUrl(),
+            ['token' => $this->config->getApiToken()]
+        );
     }
 
     /**

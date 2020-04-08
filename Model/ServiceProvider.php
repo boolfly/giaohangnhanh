@@ -4,7 +4,10 @@ namespace Boolfly\GiaoHangNhanh\Model;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Exception;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Http\Message\ResponseInterface;
+use Zend_Http_Client_Exception;
 
 class ServiceProvider
 {
@@ -33,18 +36,24 @@ class ServiceProvider
 
     /**
      * @param $request
-     * @return array|ResponseInterface
-     * @throws Exception
+     * @return array
+     * @throws NoSuchEntityException
+     * @throws Zend_Http_Client_Exception
+     * @throws LocalizedException
      */
     public function getAvailableServices($request)
     {
-        $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => $request
-        ];
+        $response = $this->apiService->makeRequest($this->config->getGettingServicesUrl(), $request);
+        $availableServices = [];
 
-        return $this->apiService->makeRequest($this->config->getGettingServicesUrl(), $data);
+        if ($this->apiService->checkResponse($response)) {
+            $data = $response['response_object']['data'];
+
+            if (is_array($data)) {
+                $availableServices = $data;
+            }
+        }
+
+        return $availableServices;
     }
 }

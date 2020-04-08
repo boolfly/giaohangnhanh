@@ -5,12 +5,14 @@ namespace Boolfly\GiaoHangNhanh\Model\Order;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Exception;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote\AddressFactory;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
 use Psr\Http\Message\ResponseInterface;
+use Zend_Http_Client_Exception;
 
 class Processor
 {
@@ -66,6 +68,8 @@ class Processor
      * @param array $additionalData
      * @return array|ResponseInterface
      * @throws NoSuchEntityException
+     * @throws LocalizedException
+     * @throws Zend_Http_Client_Exception
      */
     public function syncOrder(Order $order, $additionalData)
     {
@@ -75,36 +79,30 @@ class Processor
         $storeInfo = $this->storeInformation->getStoreInformationObject($store);
         $storeFormattedAddress = $this->storeInformation->getFormattedAddress($store);
         $storeDistrict = (int)$config->getStoreDistrict();
-        $address = $this->addressFactory->create()->load($order->getQuoteAddressId());
 
         $data = [
-            'headers' => [
-                'Content-Type' => 'application/json'
-            ],
-            'json' => [
-                'token' => $config->getApiToken(),
-                'PaymentTypeID' => $config->getPaymentType(),
-                'FromDistrictID' => $storeDistrict,
-                'ToDistrictID' => (int)$additionalData['district'],
-                'ClientContactName' => $storeInfo->getName(),
-                'ClientContactPhone' => $storeInfo->getPhone(),
-                'ClientAddress' => $storeFormattedAddress,
-                'CustomerName' => $order->getCustomerName(),
-                'CustomerPhone' => $order->getShippingAddress()->getTelephone(),
-                'ShippingAddress' => $order->getShippingAddress()->getStreetLine(1),
-                'NoteCode' => $config->getNoteCode(),
-                'ServiceID' => $additionalData['shipping_service_id'],
-                'Weight' => $order->getWeight() * $weightRate,
-                'Length' => 10,
-                'Width' => 10,
-                'Height' => 10,
-                'CoDAmount' => 0,
-                'ReturnContactName' => $storeInfo->getName(),
-                'ReturnContactPhone' => $storeInfo->getPhone(),
-                'ReturnAddress' => $storeFormattedAddress,
-                'ReturnDistrictID' => $storeDistrict,
-                'ExternalReturnCode' => $storeInfo->getName()
-            ]
+            'token' => $config->getApiToken(),
+            'PaymentTypeID' => (int)$config->getPaymentType(),
+            'FromDistrictID' => $storeDistrict,
+            'ToDistrictID' => (int)$additionalData['district'],
+            'ClientContactName' => $storeInfo->getName(),
+            'ClientContactPhone' => $storeInfo->getPhone(),
+            'ClientAddress' => $storeFormattedAddress,
+            'CustomerName' => $order->getCustomerName(),
+            'CustomerPhone' => $order->getShippingAddress()->getTelephone(),
+            'ShippingAddress' => $order->getShippingAddress()->getStreetLine(1),
+            'NoteCode' => $config->getNoteCode(),
+            'ServiceID' => $additionalData['shipping_service_id'],
+            'Weight' => $order->getWeight() * $weightRate,
+            'Length' => 10,
+            'Width' => 10,
+            'Height' => 10,
+            'CoDAmount' => 0,
+            'ReturnContactName' => $storeInfo->getName(),
+            'ReturnContactPhone' => $storeInfo->getPhone(),
+            'ReturnAddress' => $storeFormattedAddress,
+            'ReturnDistrictID' => $storeDistrict,
+            'ExternalReturnCode' => $storeInfo->getName()
         ];
 
         return $this->apiService->makeRequest($config->getSynchronizingOrderUrl(), $data);

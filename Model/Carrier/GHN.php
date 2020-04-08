@@ -183,16 +183,11 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
 
                 $response = $this->restService->makeRequest(
                     $this->config->getCalculatingFeeUrl(),
-                    [
-                        'headers' => [
-                            'Content-Type' => 'application/json'
-                        ],
-                        'json' => $requestBody
-                    ]
+                    $requestBody
                 );
 
                 if ($this->restService->checkResponse($response)) {
-                    return $response['response_object']->data->CalculatedFee;
+                    return $response['response_object']['data']['CalculatedFee'];
                 }
             }
         }
@@ -207,10 +202,10 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     {
         if (count($this->availableServices)) {
             foreach ($this->availableServices as $serviceItem) {
-                if (!empty($serviceItem->Name)) {
+                if (!empty($serviceItem['Name'])) {
 
-                    if ($serviceItem->Name == static::SERVICE_NAME) {
-                        return $serviceItem->ServiceID;
+                    if ($serviceItem['Name'] == static::SERVICE_NAME) {
+                        return $serviceItem['ServiceID'];
                     }
                 }
             }

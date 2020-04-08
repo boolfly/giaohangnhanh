@@ -73,20 +73,20 @@ class GenerateRegionCommand extends Command
         if (true === $this->service->checkResponse($response)) {
             $output->writeln('<info>Generating data. Please wait...</info>');
             $responseObject = $response['response_object'];
-            $data = empty($responseObject->data) ? null : $responseObject->data;
+            $data = empty($responseObject['data']) ? null : $responseObject['data'];
 
             if ($data && is_array($data)) {
                 foreach ($data as $item) {
-                    $provinceId = $item->ProvinceID;
+                    $provinceId = $item['ProvinceID'];
                     $region = $this->regionFactory->create()
                         ->loadByCode($provinceId, 'VN');
 
                     $this->insertData(
                         'boolfly_giaohangnhanh_district',
                         [
-                            'district_id' => $item->DistrictID,
+                            'district_id' => $item['DistrictID'],
                             'province_id' => $provinceId,
-                            'district_name' => $item->DistrictName
+                            'district_name' => $item['DistrictName']
                         ]
                     );
 
@@ -96,7 +96,7 @@ class GenerateRegionCommand extends Command
                             [
                                 'country_id' => 'VN',
                                 'code' => $provinceId,
-                                'default_name' => $item->ProvinceName
+                                'default_name' => $item['ProvinceName']
                             ]
                         );
                     }
