@@ -3,109 +3,75 @@
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest;
 
 use Exception;
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\BadResponseException;
-use Psr\Http\Message\ResponseInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\Framework\Serialize\SerializerInterface;
 use Psr\Log\LoggerInterface;
-use Zend\Json\Json;
+use Zend_Http_Client;
+use Zend_Http_Client_Exception;
+use Zend_Http_Response;
 
 class Service
 {
-    /**
-     * post
-     */
-    const POST = 'post';
-
-    /**
-     * get
-     */
-    const GET = 'get';
-
-    /**
-     * put
-     */
-    const PUT = 'put';
-
-    /**
-     * patch
-     */
-    const PATCH = 'patch';
-
-    /**
-     * delete
-     */
-    const DELETE = 'delete';
-
-    /**
-     * @var Client
-     */
-    private $client;
-
     /**
      * @var LoggerInterface $log
      */
     private $log;
 
     /**
+     * @var SerializerInterface
+     */
+    protected $serializer;
+
+    /**
+     * @var ZendClientFactory
+     */
+    protected $httpClientFactory;
+
+    /**
      * Service constructor.
      * @param LoggerInterface $log
+     * @param SerializerInterface $serializer
+     * @param ZendClientFactory $httpClientFactory
      */
     public function __construct(
-        LoggerInterface $log
+        LoggerInterface $log,
+        SerializerInterface $serializer,
+        ZendClientFactory $httpClientFactory
     ) {
         $this->log = $log;
-        $this->client = new Client();
+        $this->serializer = $serializer;
+        $this->httpClientFactory = $httpClientFactory;
     }
 
     /**
      * @param $url
-     * @param array $options
+     * @param array $rawData
      * @param string $method
-     * @return array|ResponseInterface
-     * @throws Exception
+     * @return mixed|Zend_Http_Response
+     * @throws LocalizedException
+     * @throws Zend_Http_Client_Exception
      */
-    public function makeRequest($url, $options = [], $method = self::POST)
+    public function makeRequest($url, $rawData = [], $method = Zend_Http_Client::POST)
     {
-        $response = [
-            'is_successful' => false
-        ];
-        try {
-            /** @var ResponseInterface $response */
-            $response = $this->client->$method($url, $options);
-            $response = $this->processResponse($response);
-            $response['is_successful'] = true;
-        } catch (BadResponseException $e) {
-            $this->log->error('Bad Response: ' . $e->getMessage());
-            $this->log->error((string)$e->getRequest()->getBody());
-            $response['response_status_code'] = $e->getCode();
-            $response['response_status_message'] = $e->getMessage();
-            $response = $this->processResponse($response);
-            if ($e->hasResponse()) {
-                $errorResponse = $e->getResponse();
-                $this->log->error($errorResponse->getStatusCode() . ' ' . $errorResponse->getReasonPhrase());
-                try {
-                    $body = $this->processResponse($errorResponse);
-                } catch (Exception $e) {
-                    $this->log->error('Exception: ' . $e->getMessage());
-                    $response['exception_code'] = $e->getCode();
-                }
-                $response = array_merge($response, $body);
-            }
-            $response['exception_code'] = $e->getCode();
-        } catch (Exception $e) {
-            $this->log->error('Exception: ' . $e->getMessage());
-            $response['exception_code'] = $e->getCode();
-        }
+        $client = $this->httpClientFactory->create();
+        $client->setUri($url);
+        $client->setConfig(['maxredirects' => 0, 'timeout' => 60]);
+        $client->setRawData($this->serializer->serialize($rawData));
+        $client->setMethod($method);
 
-        return $response;
+        try {
+            $response = $client->request();
+            $response = $this->processResponse($response);
+            return $response;
+        } catch (Exception $e) {
+            throw new LocalizedException(__('The transaction details are unavailable. Please try again later.'));
+        }
     }
 
     /**
-     * Process the response and return an array
-     *
-     * @param ResponseInterface|array $response
-     * @return array
-     * @throws Exception
+     * @param Zend_Http_Response $response
+     * @return mixed
      */
     private function processResponse($response)
     {
@@ -114,14 +80,14 @@ class Service
         }
 
         try {
-            $body = Json::decode((string)$response->getBody());
+            $body = $this->serializer->unserialize((string)$response->getBody());
         } catch (Exception $e) {
             $body = $e->getMessage();
         }
 
         $data['response_object'] = $body;
-        $data['response_status_code'] = $response->getStatusCode();
-        $data['response_status_message'] = $response->getReasonPhrase();
+        $data['response_status_code'] = $response->getStatus();
+        $data['response_status_message'] = $response->getMessage();
 
         return $data;
     }
