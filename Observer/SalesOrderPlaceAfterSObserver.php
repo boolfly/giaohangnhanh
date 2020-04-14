@@ -2,7 +2,6 @@
 
 namespace Boolfly\GiaoHangNhanh\Observer;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Boolfly\GiaoHangNhanh\Model\Order\Processor;
 use Exception;
@@ -38,27 +37,19 @@ class SalesOrderPlaceAfterSObserver implements ObserverInterface
     private $orderProcessor;
 
     /**
-     * @var Service
-     */
-    private $apiService;
-
-    /**
      * SalesOrderAfterSaveObserver constructor.
      * @param QuoteRepository $quoteRepository
      * @param AddressFactory $customerAddressFactory
      * @param LoggerInterface $logger
      * @param Processor $orderProcessor
-     * @param Service $apiService
      */
     public function __construct(
         QuoteRepository $quoteRepository,
         AddressFactory $customerAddressFactory,
         LoggerInterface $logger,
-        Processor $orderProcessor,
-        Service $apiService
+        Processor $orderProcessor
     ) {
         $this->logger = $logger;
-        $this->apiService = $apiService;
         $this->quoteRepository = $quoteRepository;
         $this->orderProcessor = $orderProcessor;
         $this->customerAddressFactory = $customerAddressFactory;
@@ -79,9 +70,9 @@ class SalesOrderPlaceAfterSObserver implements ObserverInterface
                 'district' => $shippingAddress->getDistrict(),
                 'shipping_service_id' => $shippingAddress->getShippingServiceId()
             ];
-            $response = $this->orderProcessor->syncOrder($order, $additionalData);
+            $result = $this->orderProcessor->syncOrder($order, $additionalData);
 
-            if (true === $this->apiService->checkResponse($response)) {
+            if (true === $result) {
                 $order->setData('ghn_status', self::GHN_STATUS_SUCCESS);
             } else {
                 $order->setData('ghn_status', self::GHN_STATUS_FAIL);

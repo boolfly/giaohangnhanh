@@ -2,7 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Plugin\Quote\Model;
 
-use Boolfly\GiaoHangNhanh\Model\DistrictProvider;
+use Magento\Customer\Model\AddressFactory;
 use Magento\Quote\Model\ShippingMethodManagement as MageShippingMethodManagement;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteRepository;
@@ -15,21 +15,21 @@ class EstimateByAddressIdBefore
     private $quoteRepository;
 
     /**
-     * @var DistrictProvider
+     * @var AddressFactory
      */
-    private $districtProvider;
+    private $customerAddressFactory;
 
     /**
      * ShippingInformationManagement constructor.
      * @param QuoteRepository $quoteRepository
-     * @param DistrictProvider $districtProvider
+     * @param AddressFactory $customerAddressFactory
      */
     public function __construct(
         QuoteRepository $quoteRepository,
-        DistrictProvider $districtProvider
+        AddressFactory $customerAddressFactory
     ) {
         $this->quoteRepository = $quoteRepository;
-        $this->districtProvider = $districtProvider;
+        $this->customerAddressFactory = $customerAddressFactory;
     }
 
     /**
@@ -45,7 +45,12 @@ class EstimateByAddressIdBefore
     ) {
         /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->quoteRepository->getActive($cartId);
-        $district = $this->districtProvider->getDistrictByCustomerAddressId($addressId);
+        $address = $this->customerAddressFactory->create()->load($addressId);
+        $district = '';
+
+        if ($address->getId()) {
+            $district = $address->getDistrict();
+        }
 
         if (!$district) {
             return;

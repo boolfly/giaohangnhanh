@@ -3,8 +3,8 @@
 namespace Boolfly\GiaoHangNhanh\Plugin\Checkout\Model;
 
 use Boolfly\GiaoHangNhanh\Model\Config;
-use Boolfly\GiaoHangNhanh\Model\DistrictProvider;
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
+use Magento\Customer\Model\AddressFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Checkout\Model\ShippingInformationManagement as MageShippingInformationManagement;
@@ -17,21 +17,21 @@ class ShippingInformationManagement
     private $quoteRepository;
 
     /**
-     * @var DistrictProvider
+     * @var AddressFactory
      */
-    private $districtProvider;
+    private $customerAddressFactory;
 
     /**
      * ShippingInformationManagement constructor.
      * @param QuoteRepository $quoteRepository
-     * @param DistrictProvider $districtProvider
+     * @param AddressFactory $customerAddressFactory
      */
     public function __construct(
         QuoteRepository $quoteRepository,
-        DistrictProvider $districtProvider
+        AddressFactory $customerAddressFactory
     ) {
         $this->quoteRepository = $quoteRepository;
-        $this->districtProvider = $districtProvider;
+        $this->customerAddressFactory = $customerAddressFactory;
     }
 
     /**
@@ -57,7 +57,11 @@ class ShippingInformationManagement
 
             if (!$extensionAttributes->getDistrict()) {
                 if ($customerAddressId = $shippingAddress->getCustomerAddressId()) {
-                    $district = $this->districtProvider->getDistrictByCustomerAddressId($customerAddressId);
+                    $address = $this->customerAddressFactory->create()->load($customerAddressId);
+
+                    if ($address->getId()) {
+                        $district = $address->getDistrict();
+                    }
                 }
             } else {
                 $district = $extensionAttributes->getDistrict();

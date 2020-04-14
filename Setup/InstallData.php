@@ -4,6 +4,7 @@ namespace Boolfly\GiaoHangNhanh\Setup;
 
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Eav\Setup\EavSetupFactory;
+use Magento\Eav\Model\Config;
 use Magento\Framework\Setup\InstallDataInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
@@ -20,12 +21,21 @@ class InstallData implements InstallDataInterface
     private $eavSetupFactory;
 
     /**
+     * @var Config
+     */
+    private $eavConfig;
+
+    /**
      * Init
      * @param EavSetupFactory $eavSetupFactory
+     * @param Config $eavConfig
      */
-    public function __construct(EavSetupFactory $eavSetupFactory)
-    {
+    public function __construct(
+        EavSetupFactory $eavSetupFactory,
+        Config $eavConfig
+    ) {
         $this->eavSetupFactory = $eavSetupFactory;
+        $this->eavConfig = $eavConfig;
     }
 
     /**
@@ -36,6 +46,7 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
+        $setup->startSetup();
         $eavSetup = $this->eavSetupFactory->create();
         $eavSetup->addAttribute(
             'customer_address',
@@ -57,5 +68,15 @@ class InstallData implements InstallDataInterface
                 'visible_on_front' => true
             ]
         );
+
+        $customAttribute = $this->eavConfig->getAttribute('customer_address', 'district');
+
+        $customAttribute->setData(
+            'used_in_forms',
+            ['adminhtml_customer_address','customer_address_edit','customer_register_address']
+        );
+        $customAttribute->save();
+
+        $setup->endSetup();
     }
 }

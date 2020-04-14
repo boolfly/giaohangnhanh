@@ -4,9 +4,10 @@ namespace Boolfly\GiaoHangNhanh\Model;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Exception;
-use Magento\Customer\Model\AddressFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Psr\Http\Message\ResponseInterface;
+use Zend_Http_Client_Exception;
 
 class DistrictProvider
 {
@@ -21,51 +22,42 @@ class DistrictProvider
     private $config;
 
     /**
-     * @var AddressFactory
-     */
-    private $customerAddressFactory;
-
-    /**
      * DistrictProvider constructor.
      * @param Service $apiService
      * @param Config $config
-     * @param AddressFactory $customerAddressFactory
      */
     public function __construct(
         Service $apiService,
-        Config $config,
-        AddressFactory $customerAddressFactory
+        Config $config
     ) {
         $this->apiService = $apiService;
         $this->config = $config;
-        $this->customerAddressFactory = $customerAddressFactory;
     }
 
     /**
-     * @return array|ResponseInterface
+     * @return array
      * @throws NoSuchEntityException
-     * @throws Exception
+     * @throws LocalizedException
+     * @throws Zend_Http_Client_Exception
      */
     public function getDistrictList()
     {
-        return $this->apiService->makeRequest(
+        $data = [];
+        $response = $this->apiService->makeRequest(
             $this->config->getGettingDistrictsUrl(),
             ['token' => $this->config->getApiToken()]
         );
-    }
 
-    /**
-     * @param int $customerAddressId
-     * @return string
-     */
-    public function getDistrictByCustomerAddressId($customerAddressId)
-    {
-        $address = $this->customerAddressFactory->create()->load($customerAddressId);
+        if ($this->apiService->checkResponse($response)) {
+            $responseObject = $response['response_object'];
 
-        if (!$address->getId()) {
-            return '';
+            if (!empty($responseObject['data'])) {
+                if (is_array($responseObject['data'])) {
+                    $data = $responseObject['data'];
+                }
+            }
         }
 
-        return $address->getDistrict() ?: '';
+        return $data;
     }
 }

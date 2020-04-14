@@ -4,7 +4,6 @@ namespace Boolfly\GiaoHangNhanh\Model\Order;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
-use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\Quote\AddressFactory;
@@ -66,9 +65,9 @@ class Processor
     /**
      * @param Order $order
      * @param array $additionalData
-     * @return array|ResponseInterface
-     * @throws NoSuchEntityException
+     * @return bool
      * @throws LocalizedException
+     * @throws NoSuchEntityException
      * @throws Zend_Http_Client_Exception
      */
     public function syncOrder(Order $order, $additionalData)
@@ -105,6 +104,8 @@ class Processor
             'ExternalReturnCode' => $storeInfo->getName()
         ];
 
-        return $this->apiService->makeRequest($config->getSynchronizingOrderUrl(), $data);
+        $response = $this->apiService->makeRequest($config->getSynchronizingOrderUrl(), $data);
+
+        return $this->apiService->checkResponse($response);
     }
 }

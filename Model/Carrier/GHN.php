@@ -3,9 +3,6 @@
 namespace Boolfly\GiaoHangNhanh\Model\Carrier;
 
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
-use Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Express;
-use Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Standard;
-use Boolfly\GiaoHangNhanh\Model\ServiceProvider;
 use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -52,11 +49,6 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     protected $restService;
 
     /**
-     * @var ServiceProvider
-     */
-    protected $serviceProvider;
-
-    /**
      * @var Config
      */
     protected $config;
@@ -79,7 +71,6 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
      * @param ResultFactory $rateResultFactory
      * @param MethodFactory $rateMethodFactory
      * @param Service $restService
-     * @param ServiceProvider $serviceProvider
      * @param Config $config
      * @param QuoteRepository $quoteRepository
      * @param array $data
@@ -91,7 +82,6 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         ResultFactory $rateResultFactory,
         MethodFactory $rateMethodFactory,
         Service $restService,
-        ServiceProvider $serviceProvider,
         Config $config,
         QuoteRepository $quoteRepository,
         array $data = []
@@ -100,7 +90,6 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
         $this->restService = $restService;
-        $this->serviceProvider = $serviceProvider;
         $this->config = $config;
         $this->quoteRepository = $quoteRepository;
     }
@@ -149,7 +138,7 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
      * @throws LocalizedException
      * @throws Exception
      */
-    private function estimateShippingCost(RateRequest $request)
+    protected function estimateShippingCost(RateRequest $request)
     {
         $quote = $this->quoteRepository->getActive(
             $request->getAllItems()[0]->getQuoteId()
@@ -166,7 +155,7 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
                 'ToDistrictID' => (int)$districtId
             ];
 
-            $this->availableServices = $this->serviceProvider->getAvailableServices($requestBody);
+            $this->prepareServices($requestBody);
 
             if ($serviceId = $this->getAvailableService()) {
                 $requestBody['ServiceID'] = $serviceId;
@@ -193,6 +182,19 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         }
 
         return null;
+    }
+
+    protected function prepareServices($request)
+    {
+        $response = $this->restService->makeRequest($this->config->getGettingServicesUrl(), $request);
+
+        if ($this->restService->checkResponse($response)) {
+            $data = $response['response_object']['data'];
+
+            if (is_array($data)) {
+                $this->availableServices = $data;
+            }
+        }
     }
 
     /**
