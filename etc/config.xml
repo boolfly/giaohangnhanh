@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <giaohangnhanh_setting>
+            <general>
+                <api_token>TokenStaging</api_token>
+                <payment_type>2</payment_type>
+                <calculate_fee_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CalculateFee</calculate_fee_url>
+                <sync_order_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CreateOrder</sync_order_url>
+                <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
+                <note_code>CHOXEMHANGKHONGTHU</note_code>
+                <get_services_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/FindAvailableServices</get_services_url>
+            </general>
+        </giaohangnhanh_setting>
         <carriers>
             <giaohangnhanh_express>
                 <active>1</active>
@@ -11,12 +22,6 @@
                 <title>Giao Hang Nhanh</title>
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
                 <handling_type>F</handling_type>
-                <api_token>TokenStaging</api_token>
-                <calculate_fee_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CalculateFee</calculate_fee_url>
-                <sync_order_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CreateOrder</sync_order_url>
-                <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
-                <payment_type>2</payment_type>
-                <note_code>CHOXEMHANGKHONGTHU</note_code>
             </giaohangnhanh_express>
             <giaohangnhanh_standard>
                 <active>1</active>
@@ -27,13 +32,6 @@
                 <title>Giao Hang Nhanh</title>
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
                 <handling_type>F</handling_type>
-                <api_token>TokenStaging</api_token>
-                <calculate_fee_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CalculateFee</calculate_fee_url>
-                <sync_order_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/CreateOrder</sync_order_url>
-                <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
-                <get_services_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/FindAvailableServices</get_services_url>
-                <payment_type>2</payment_type>
-                <note_code>CHOXEMHANGKHONGTHU</note_code>
             </giaohangnhanh_standard>
         </carriers>
     </default>

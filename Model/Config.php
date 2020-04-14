@@ -18,14 +18,15 @@ class Config
     const TITLE = 'title';
     const NAME = 'name';
     const SALLOWSPECIFIC = 'sallowspecific';
-    const API_TOKEN = 'carriers/giaohangnhanh_standard/api_token';
-    const PAYMENT_TYPE = 'carriers/giaohangnhanh_standard/payment_type';
-    const CALCULATING_FEE_URL = 'carriers/giaohangnhanh_standard/calculate_fee_url';
-    const SYNCHRONIZING_ORDER_URL = 'carriers/giaohangnhanh_standard/sync_order_url';
-    const GETTING_DISTRICTS_URL = 'carriers/giaohangnhanh_standard/get_districts_url';
-    const NOTE_CODE = 'carriers/giaohangnhanh_standard/note_code';
-    const DISTRICT = 'carriers/giaohangnhanh_standard/district';
-    const GETTING_SERVICES_URL = 'carriers/giaohangnhanh_standard/get_services_url';
+    const SPECIFICCOUNTRY = 'specificcountry';
+    const API_TOKEN = 'giaohangnhanh_setting/general/api_token';
+    const PAYMENT_TYPE = 'giaohangnhanh_setting/general/payment_type';
+    const CALCULATING_FEE_URL = 'giaohangnhanh_setting/general/calculate_fee_url';
+    const SYNCHRONIZING_ORDER_URL = 'giaohangnhanh_setting/general/sync_order_url';
+    const GETTING_DISTRICTS_URL = 'giaohangnhanh_setting/general/get_districts_url';
+    const NOTE_CODE = 'giaohangnhanh_setting/general/note_code';
+    const DISTRICT = 'giaohangnhanh_setting/general/district';
+    const GETTING_SERVICES_URL = 'giaohangnhanh_setting/general/get_services_url';
 
     /**
      * @var int
