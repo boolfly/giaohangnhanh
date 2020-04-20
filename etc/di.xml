@@ -1,5 +1,13 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Checkout\Block\Cart\LayoutProcessor" type="Boolfly\GiaoHangNhanh\Block\Cart\LayoutProcessor"/>
+    <preference for="Magento\Checkout\Block\Checkout\AttributeMerger" type="Boolfly\GiaoHangNhanh\Block\Checkout\AttributeMerger"/>
+    <preference for="Magento\Customer\Controller\Address\FormPost" type="Boolfly\GiaoHangNhanh\Controller\Customer\Address\FormPost"/>
+    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\SynchronizerInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Synchronizer"/>
+    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\DistrictProviderInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\DistrictProvider"/>
+    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Fee\CalculatorInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Fee\Calculator"/>
+    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Services\ProviderInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Services\Provider"/>
+    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\TrackerInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Tracker"/>
     <type name="Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand">
         <arguments>
             <!-- configure the command name via constructor $name argument -->
@@ -19,6 +27,7 @@
         <arguments>
             <argument name="columns" xsi:type="array">
                 <item name="ghn_status" xsi:type="string">sales_order.ghn_status</item>
+                <item name="tracking_code" xsi:type="string">sales_order.tracking_code</item>
             </argument>
         </arguments>
     </virtualType>
@@ -28,5 +37,26 @@
     <type name="Magento\Quote\Model\ShippingMethodManagement">
         <plugin name="EstimateByAddressIdBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByAddressIdBefore" sortOrder="23"/>
         <plugin name="EstimateByExtendedAddressBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByExtendedAddressBefore" sortOrder="23"/>
+    </type>
+    <type name="Magento\Customer\Model\ResourceModel\AddressRepository">
+        <plugin name="GetByIdAfter" type="Boolfly\GiaoHangNhanh\Plugin\Customer\Model\ResourceModel\AddressRepository" sortOrder="22"/>
+    </type>
+    <type name="Magento\Checkout\Model\TotalsInformationManagement">
+        <plugin name="CalculateBefore" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Model\TotalsInformationManagement" sortOrder="22"/>
+    </type>
+    <type name="Magento\Checkout\Block\Checkout\DirectoryDataProcessor">
+        <plugin name="DirectoryDataProcessorAfter" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout\DirectoryDataProcessor" sortOrder="22" />
+    </type>
+    <type name="Magento\Customer\Model\Address">
+        <plugin name="UpdateDataAfter" type="Boolfly\GiaoHangNhanh\Plugin\Customer\Model\Address" sortOrder="22" />
+    </type>
+    <type name="Magento\Quote\Model\Quote\Address">
+        <plugin name="ExportCustomerAddressAfter" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\Quote\Address" sortOrder="42" />
+    </type>
+    <type name="Magento\Shipping\Model\Shipping">
+        <plugin name="CollectRatesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Shipping\Model\Shipping" sortOrder="22" />
+    </type>
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="CanCancelAfter" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Model\Order" sortOrder="12" />
     </type>
 </config>
