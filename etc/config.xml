@@ -10,6 +10,7 @@
                 <get_districts_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/GetDistricts</get_districts_url>
                 <note_code>CHOXEMHANGKHONGTHU</note_code>
                 <get_services_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/FindAvailableServices</get_services_url>
+                <get_order_infor>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3/OrderInfo</get_order_infor>
             </general>
         </giaohangnhanh_setting>
         <carriers>

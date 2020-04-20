@@ -27,6 +27,7 @@ class Config
     const NOTE_CODE = 'giaohangnhanh_setting/general/note_code';
     const DISTRICT = 'giaohangnhanh_setting/general/district';
     const GETTING_SERVICES_URL = 'giaohangnhanh_setting/general/get_services_url';
+    const GETTING_ORDER_INFOR = 'giaohangnhanh_setting/general/get_order_infor';
 
     /**
      * @var int
@@ -104,6 +105,15 @@ class Config
      * @return mixed
      * @throws NoSuchEntityException
      */
+    public function getGettingOrderInforUrl()
+    {
+        return $this->getConfig(self::GETTING_ORDER_INFOR);
+    }
+
+    /**
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
     public function getGettingServicesUrl()
     {
         return $this->getConfig(self::GETTING_SERVICES_URL);
@@ -160,6 +170,25 @@ class Config
         );
 
         return $connection->fetchAll($sql);
+    }
+
+    /**
+     * @return array
+     */
+    public function getDistrictOptions()
+    {
+        $districts = $this->getDistricts();
+        $data = [];
+        foreach ($districts as $district) {
+            $districtName = $district['district_name'];
+            $data[] = [
+                'title' => $districtName,
+                'value' => $district['district_id'],
+                'region_id' => $district['region_id'],
+                'label' => $districtName
+            ];
+        }
+        return $data;
     }
 
     /**

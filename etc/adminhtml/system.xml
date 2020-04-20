@@ -133,6 +133,9 @@
                 <field id="get_services_url" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Getting Available Services Api Url</label>
                 </field>
+                <field id="get_order_infor" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Getting Order Infor Api Url</label>
+                </field>
             </group>
         </section>
     </system>
