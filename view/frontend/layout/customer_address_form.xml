@@ -5,6 +5,12 @@
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Boolfly_GiaoHangNhanh::address/edit.phtml</argument>
             </action>
+            <arguments>
+                <!-- Newly added block argument -->
+                <argument name="additional_config" xsi:type="object">
+                    Boolfly\GiaoHangNhanh\Block\Customer\DataProviders\AdditionalConfig
+                </argument>
+            </arguments>
         </referenceBlock>
     </body>
 </page>
