@@ -14,6 +14,7 @@
     <table name="sales_order" resource="sales" engine="innodb">
         <column xsi:type="smallint" name="ghn_status" nullable="true" default="0" unsigned="false" identity="false"
                 comment="Giaohangnhanh status"/>
+        <column xsi:type="varchar" name="tracking_code" nullable="true" length="255" comment="Tracking Code"/>
     </table>
     <table name="quote_address" resource="checkout" engine="innodb">
         <column xsi:type="varchar" name="district" nullable="true" length="11" comment="District"/>
@@ -22,5 +23,6 @@
     <table name="sales_order_grid" resource="sales" engine="innodb">
         <column xsi:type="smallint" name="ghn_status" nullable="true" default="0" unsigned="false" identity="false"
                 comment="Giaohangnhanh status"/>
+        <column xsi:type="varchar" name="tracking_code" nullable="true" length="255" comment="Tracking Code"/>
     </table>
 </schema>
