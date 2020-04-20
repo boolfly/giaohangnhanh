@@ -211,6 +211,14 @@
                 "defaultRegion": "<?= (int) $block->getRegionId() ?>",
                 "countriesWithOptionalZip": <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getCountriesWithOptionalZip(true) ?>
             }
+        },
+        "#region_id": {
+            "districtUpdater": {
+                "districtListId": "#district_id",
+                "defaultRegion": "<?= (int) $block->getRegionId() ?>",
+                "defaultDistrict": "<?= $block->getAddress()->getExtensionAttributes()->getDistrict() ?>",
+                "jsonConfig": <?= /* @noEscape */ $block->getAdditionalConfig()->getJsonData(); ?>
+            }
         }
     }
 </script>

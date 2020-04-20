@@ -15,10 +15,22 @@ define([
          */
         getRates: function (address) {
             var cache, serviceUrl, payload;
+            var district = '';
 
             shippingService.isLoading(true);
             cache = rateRegistry.get(address.getCacheKey());
             serviceUrl = resourceUrlManager.getUrlForEstimationShippingMethodsForNewAddress(quote);
+
+            if (typeof address.customAttributes === "undefined") {
+                district = jQuery('[name="district"]').val();
+            } else {
+                jQuery.each(address.customAttributes, function (k, v) {
+                    if (v.attribute_code == 'district') {
+                        district = v.value;
+                    }
+                });
+            }
+
             payload = JSON.stringify({
                     address: {
                         'street': address.street,
@@ -40,8 +52,7 @@ define([
                         'fax': address.fax,
                         'custom_attributes': address.customAttributes,
                         'extension_attributes': {
-                            'checkout_fields': address.customAttributes
-
+                            'district': district
                         },
                         'save_in_address_book': address.saveInAddressBook
                     }

@@ -1,27 +1,24 @@
 define([
     'jquery',
-    'Magento_Ui/js/form/element/select',
-    'Magento_Checkout/js/model/quote',
-    'Magento_Checkout/js/model/shipping-rate-registry'
-], function ($, Component, quote, rateRegistry) {
+    'Magento_Ui/js/form/element/select'
+], function ($, Select) {
     'use strict';
 
-    let checkoutConfigDistricts = window.checkoutConfig.districts;
-    return Component.extend({
+    return Select.extend({
         defaults: {
             imports: {
-                update: 'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.region_id:value'
+                update: 'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.country_id:value'
             }
         },
 
         update: function (value) {
-            let district = $('[name="custom_attributes[district]"]');
-            let districtList = checkoutConfigDistricts[parseInt(value)];
-            district.children('option:not(:first)').remove();
-
-            $.each(districtList, function (k, v) {
-                district.append(new Option(v.districtName, v.districtID));
-            });
+            if (value === 'VN') {
+                this.validation['required-entry'] = true;
+                this.required(true);
+                this.setVisible(true);
+            } else {
+                this.setVisible(false);
+            }
         }
     });
 });
