@@ -38,17 +38,11 @@
         <plugin name="EstimateByAddressIdBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByAddressIdBefore" sortOrder="23"/>
         <plugin name="EstimateByExtendedAddressBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByExtendedAddressBefore" sortOrder="23"/>
     </type>
-    <type name="Magento\Customer\Model\ResourceModel\AddressRepository">
-        <plugin name="GetByIdAfter" type="Boolfly\GiaoHangNhanh\Plugin\Customer\Model\ResourceModel\AddressRepository" sortOrder="22"/>
-    </type>
     <type name="Magento\Checkout\Model\TotalsInformationManagement">
         <plugin name="CalculateBefore" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Model\TotalsInformationManagement" sortOrder="22"/>
     </type>
     <type name="Magento\Checkout\Block\Checkout\DirectoryDataProcessor">
         <plugin name="DirectoryDataProcessorAfter" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout\DirectoryDataProcessor" sortOrder="22" />
-    </type>
-    <type name="Magento\Customer\Model\Address">
-        <plugin name="UpdateDataAfter" type="Boolfly\GiaoHangNhanh\Plugin\Customer\Model\Address" sortOrder="22" />
     </type>
     <type name="Magento\Quote\Model\Quote\Address">
         <plugin name="ExportCustomerAddressAfter" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\Quote\Address" sortOrder="42" />
