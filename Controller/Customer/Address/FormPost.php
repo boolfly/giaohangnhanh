@@ -28,7 +28,7 @@ class FormPost extends MageFormPostController
         try {
             $address = $this->_extractAddress();
             /*custom code*/
-            $address->getExtensionAttributes()->setDistrict($this->getRequest()->getParam('district_id'));
+            $address->setCustomAttribute('district', $this->getRequest()->getParam('district_id'));
             /*end*/
             $this->_addressRepository->save($address);
             $this->messageManager->addSuccessMessage(__('You saved the address.'));

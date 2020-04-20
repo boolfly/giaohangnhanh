@@ -216,7 +216,7 @@
             "districtUpdater": {
                 "districtListId": "#district_id",
                 "defaultRegion": "<?= (int) $block->getRegionId() ?>",
-                "defaultDistrict": "<?= $block->getAddress()->getExtensionAttributes()->getDistrict() ?>",
+                "defaultDistrict": "<?= $block->getAddress()->getCustomAttribute('district')->getValue() ?>",
                 "jsonConfig": <?= /* @noEscape */ $block->getAdditionalConfig()->getJsonData(); ?>
             }
         }

@@ -9,7 +9,7 @@ class Address
     public function afterExportCustomerAddress(MageQuoteAddress $subject, $result)
     {
         if ($district = $subject->getDistrict()) {
-            $result->getExtensionAttributes()->setDistrict($district);
+            $result->setCustomAttribute('district', $district);
         }
 
         return $result;

@@ -66,6 +66,7 @@ class InstallData implements InstallDataInterface
             'is_filterable_in_grid' => false,
             'visible' => true,
             'user_defined' => true,
+            'system' =>  0,
             'is_html_allowed_on_front' => true,
             'visible_on_front' => true
         ]);
