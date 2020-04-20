@@ -2,6 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest;
 
+use Boolfly\GiaoHangNhanh\Model\Config;
 use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\ZendClientFactory;
@@ -9,14 +10,13 @@ use Magento\Framework\Serialize\SerializerInterface;
 use Psr\Log\LoggerInterface;
 use Zend_Http_Client;
 use Zend_Http_Client_Exception;
-use Zend_Http_Response;
 
-class Service
+abstract class Service
 {
     /**
      * @var LoggerInterface $log
      */
-    private $log;
+    protected $log;
 
     /**
      * @var SerializerInterface
@@ -29,17 +29,25 @@ class Service
     protected $httpClientFactory;
 
     /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * Service constructor.
      * @param LoggerInterface $log
+     * @param Config $config
      * @param SerializerInterface $serializer
      * @param ZendClientFactory $httpClientFactory
      */
     public function __construct(
         LoggerInterface $log,
+        Config $config,
         SerializerInterface $serializer,
         ZendClientFactory $httpClientFactory
     ) {
         $this->log = $log;
+        $this->config = $config;
         $this->serializer = $serializer;
         $this->httpClientFactory = $httpClientFactory;
     }
@@ -48,11 +56,11 @@ class Service
      * @param $url
      * @param array $rawData
      * @param string $method
-     * @return mixed|Zend_Http_Response
+     * @return array
      * @throws LocalizedException
      * @throws Zend_Http_Client_Exception
      */
-    public function makeRequest($url, $rawData = [], $method = Zend_Http_Client::POST)
+    protected function makeRequest($url, $rawData = [], $method = Zend_Http_Client::POST)
     {
         $client = $this->httpClientFactory->create();
         $client->setUri($url);
@@ -70,14 +78,12 @@ class Service
     }
 
     /**
-     * @param Zend_Http_Response $response
-     * @return mixed
+     * @param $response
+     * @return array
      */
-    private function processResponse($response)
+    protected function processResponse($response)
     {
-        if (is_array($response)) {
-            return $response;
-        }
+        $data = [];
 
         try {
             $body = $this->serializer->unserialize((string)$response->getBody());
@@ -98,7 +104,7 @@ class Service
      * @param $response
      * @return bool
      */
-    public function checkResponse($response)
+    protected function checkResponse($response)
     {
         if (!empty($response['response_status_code'])) {
             $code = $response['response_status_code'];

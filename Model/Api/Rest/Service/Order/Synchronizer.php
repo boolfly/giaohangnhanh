@@ -1,25 +1,23 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Boolfly\GiaoHangNhanh\Model\Order;
+namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order;
 
+use Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\SynchronizerInterface;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\HTTP\ZendClientFactory;
+use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Quote\Model\Quote\AddressFactory;
 use Magento\Sales\Model\Order;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
-use Psr\Http\Message\ResponseInterface;
+use Psr\Log\LoggerInterface;
 use Zend_Http_Client_Exception;
 
-class Processor
+class Synchronizer extends Service implements SynchronizerInterface
 {
-    /**
-     * @var Config
-     */
-    private $config;
-
     /**
      * @var StoreManagerInterface
      */
@@ -31,32 +29,30 @@ class Processor
     private $storeInformation;
 
     /**
-     * @var Service
-     */
-    private $apiService;
-
-    /**
      * @var AddressFactory
      */
     private $addressFactory;
 
     /**
-     * Processor constructor.
+     * Synchronizer constructor.
+     * @param LoggerInterface $log
      * @param Config $config
-     * @param Service $apiService
+     * @param SerializerInterface $serializer
+     * @param ZendClientFactory $httpClientFactory
      * @param StoreManagerInterface $storeManager
      * @param Information $storeInformation
      * @param AddressFactory $addressFactory
      */
     public function __construct(
+        LoggerInterface $log,
         Config $config,
-        Service $apiService,
+        SerializerInterface $serializer,
+        ZendClientFactory $httpClientFactory,
         StoreManagerInterface $storeManager,
         Information $storeInformation,
         AddressFactory $addressFactory
     ) {
-        $this->config = $config;
-        $this->apiService = $apiService;
+        parent::__construct($log, $config, $serializer, $httpClientFactory);
         $this->storeManager = $storeManager;
         $this->storeInformation = $storeInformation;
         $this->addressFactory = $addressFactory;
@@ -65,7 +61,6 @@ class Processor
     /**
      * @param Order $order
      * @param array $additionalData
-     * @return bool
      * @throws LocalizedException
      * @throws NoSuchEntityException
      * @throws Zend_Http_Client_Exception
@@ -104,8 +99,13 @@ class Processor
             'ExternalReturnCode' => $storeInfo->getName()
         ];
 
-        $response = $this->apiService->makeRequest($config->getSynchronizingOrderUrl(), $data);
+        $response = $this->makeRequest($config->getSynchronizingOrderUrl(), $data);
 
-        return $this->apiService->checkResponse($response);
+        if ($this->checkResponse($response)) {
+            $order->setData('ghn_status', self::GHN_STATUS_SUCCESS);
+            $order->setData('tracking_code', $response['response_object']['data']['OrderCode']);
+        } else {
+            $order->setData('ghn_status', self::GHN_STATUS_FAIL);
+        }
     }
 }
