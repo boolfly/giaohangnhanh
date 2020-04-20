@@ -2,6 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Setup;
 
+use Magento\Customer\Api\AddressMetadataInterface;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Eav\Setup\EavSetupFactory;
 use Magento\Eav\Model\Config;
@@ -46,36 +47,42 @@ class InstallData implements InstallDataInterface
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
+        /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
+        $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
+
         $setup->startSetup();
-        $eavSetup = $this->eavSetupFactory->create();
-        $eavSetup->addAttribute(
-            'customer_address',
-            'district',
-            [
-                'group' => 'General',
-                'type' => 'varchar',
-                'label' => 'District',
-                'input' => 'select',
-                'source' => 'Boolfly\GiaoHangNhanh\Model\Attribute\Source\District',
-                'required' => false,
-                'sort_order' => 110,
-                'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
-                'is_used_in_grid' => true,
-                'is_visible_in_grid' => true,
-                'is_filterable_in_grid' => false,
-                'visible' => true,
-                'is_html_allowed_on_front' => true,
-                'visible_on_front' => true
-            ]
+
+        $attributeCode = 'district';
+        $eavSetup->addAttribute(AddressMetadataInterface::ENTITY_TYPE_ADDRESS, $attributeCode, [
+            'group' => 'General',
+            'type' => 'varchar',
+            'label' => 'District',
+            'input' => 'text',
+            'required' => false,
+            'sort_order' => 110,
+            'global' => ScopedAttributeInterface::SCOPE_GLOBAL,
+            'is_used_in_grid' => true,
+            'is_visible_in_grid' => true,
+            'is_filterable_in_grid' => false,
+            'visible' => true,
+            'user_defined' => true,
+            'is_html_allowed_on_front' => true,
+            'visible_on_front' => true
+        ]);
+
+        $eavSetup->addAttributeToSet(
+            AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
+            AddressMetadataInterface::ATTRIBUTE_SET_ID_ADDRESS,
+            1,
+            $attributeCode
         );
 
-        $customAttribute = $this->eavConfig->getAttribute('customer_address', 'district');
-
-        $customAttribute->setData(
+        $district = $this->eavConfig->getAttribute(AddressMetadataInterface::ENTITY_TYPE_ADDRESS, $attributeCode);
+        $district->setData(
             'used_in_forms',
             ['adminhtml_customer_address','customer_address_edit','customer_register_address']
         );
-        $customAttribute->save();
+        $district->getResource()->save($district);
 
         $setup->endSetup();
     }
