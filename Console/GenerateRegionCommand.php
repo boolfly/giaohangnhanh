@@ -2,7 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Console;
 
-use Boolfly\GiaoHangNhanh\Model\DistrictProvider;
+use Boolfly\GiaoHangNhanh\Api\Rest\Service\DistrictProviderInterface;
 use Magento\Directory\Model\RegionFactory;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\LocalizedException;
@@ -25,7 +25,7 @@ class GenerateRegionCommand extends Command
     private $regionFactory;
 
     /**
-     * @var DistrictProvider
+     * @var DistrictProviderInterface
      */
     private $districtProvider;
 
@@ -33,13 +33,13 @@ class GenerateRegionCommand extends Command
      * GeneratingRegionData constructor.
      * @param ResourceConnection $resourceConnection
      * @param RegionFactory $regionFactory
-     * @param DistrictProvider $districtProvider
+     * @param DistrictProviderInterface $districtProvider
      * @param string|null $name
      */
     public function __construct(
         ResourceConnection $resourceConnection,
         RegionFactory $regionFactory,
-        DistrictProvider $districtProvider,
+        DistrictProviderInterface $districtProvider,
         $name = null
     ) {
         $this->resourceConnection = $resourceConnection;

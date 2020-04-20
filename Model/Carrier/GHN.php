@@ -2,11 +2,12 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Carrier;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
+use Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Fee\CalculatorInterface;
+use Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Services\ProviderInterface;
 use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Quote\Model\QuoteRepository;
+use Magento\Quote\Model\Quote\Address;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Psr\Log\LoggerInterface;
 use Boolfly\GiaoHangNhanh\Model\Config;
@@ -18,6 +19,7 @@ use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
+use Zend_Http_Client_Exception;
 
 abstract class GHN extends AbstractCarrier implements CarrierInterface
 {
@@ -44,19 +46,19 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     private $rateMethodFactory;
 
     /**
-     * @var Service
-     */
-    protected $restService;
-
-    /**
      * @var Config
      */
     protected $config;
 
     /**
-     * @var QuoteRepository
+     * @var CalculatorInterface
      */
-    protected $quoteRepository;
+    protected $calculator;
+
+    /**
+     * @var ProviderInterface
+     */
+    protected $serviceProvider;
 
     /**
      * @var array
@@ -70,9 +72,9 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
      * @param LoggerInterface $logger
      * @param ResultFactory $rateResultFactory
      * @param MethodFactory $rateMethodFactory
-     * @param Service $restService
      * @param Config $config
-     * @param QuoteRepository $quoteRepository
+     * @param CalculatorInterface $calculator
+     * @param ProviderInterface $serviceProvider
      * @param array $data
      */
     public function __construct(
@@ -81,17 +83,17 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         LoggerInterface $logger,
         ResultFactory $rateResultFactory,
         MethodFactory $rateMethodFactory,
-        Service $restService,
         Config $config,
-        QuoteRepository $quoteRepository,
+        CalculatorInterface $calculator,
+        ProviderInterface $serviceProvider,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
-        $this->restService = $restService;
         $this->config = $config;
-        $this->quoteRepository = $quoteRepository;
+        $this->calculator = $calculator;
+        $this->serviceProvider = $serviceProvider;
     }
 
     /**
@@ -140,11 +142,9 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
      */
     protected function estimateShippingCost(RateRequest $request)
     {
-        $quote = $this->quoteRepository->getActive(
-            $request->getAllItems()[0]->getQuoteId()
-        );
-        $shippingAddress = $quote->getShippingAddress();
-        $districtId = $shippingAddress->getDistrict();
+        $shippingAddress = $request->getShippingAddress();
+        $districtId = $request->getDistrict();
+        $shippingFee = null;
 
         if ($districtId) {
             $rate = $this->config->getWeightUnit() == 'kgs' ? Config::KGS_G : Config::LBS_G;
@@ -159,42 +159,35 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
 
             if ($serviceId = $this->getAvailableService()) {
                 $requestBody['ServiceID'] = $serviceId;
-
-                if ($request->getLimitCarrier()) {
-                    $shippingAddress->setData('shipping_service_id', $serviceId);
-
-                    try {
-                        $shippingAddress->save();
-                    } catch (Exception $e) {
-                        $this->_logger->error(__('Can\'t save shipping address.'));
-                    }
-                }
-
-                $response = $this->restService->makeRequest(
-                    $this->config->getCalculatingFeeUrl(),
-                    $requestBody
-                );
-
-                if ($this->restService->checkResponse($response)) {
-                    return $response['response_object']['data']['CalculatedFee'];
-                }
+                $this->updateShippingServiceForAddress($request, $shippingAddress, $serviceId);
+                $shippingFee = $this->calculator->calculate($requestBody);
             }
         }
 
-        return null;
+        return $shippingFee;
     }
 
+    /**
+     * @param RateRequest $request
+     * @param Address $shippingAddress
+     * @param string $serviceId
+     */
+    protected function updateShippingServiceForAddress(RateRequest $request, Address $shippingAddress, $serviceId)
+    {
+        if ($request->getLimitCarrier()) {
+            $shippingAddress->setData('shipping_service_id', $serviceId);
+        }
+    }
+
+    /**
+     * @param array $request
+     * @throws LocalizedException
+     * @throws NoSuchEntityException
+     * @throws Zend_Http_Client_Exception
+     */
     protected function prepareServices($request)
     {
-        $response = $this->restService->makeRequest($this->config->getGettingServicesUrl(), $request);
-
-        if ($this->restService->checkResponse($response)) {
-            $data = $response['response_object']['data'];
-
-            if (is_array($data)) {
-                $this->availableServices = $data;
-            }
-        }
+        $this->availableServices = $this->serviceProvider->getShippingServices($request);
     }
 
     /**
@@ -205,7 +198,6 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         if (count($this->availableServices)) {
             foreach ($this->availableServices as $serviceItem) {
                 if (!empty($serviceItem['Name'])) {
-
                     if ($serviceItem['Name'] == static::SERVICE_NAME) {
                         return $serviceItem['ServiceID'];
                     }
