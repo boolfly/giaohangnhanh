@@ -10,7 +10,7 @@ class LayoutProcessor
     {
         $result['components']['checkout']['children']['steps']['children']['shipping-step']['children']
         ['shippingAddress']['children']['shipping-address-fieldset']['children']['district'] = [
-            'component' => 'Magento_Ui/js/form/element/select',
+            'component' => 'Boolfly_GiaoHangNhanh/js/view/checkout/shipping/district',
             'config' => [
                 'customScope' => 'shippingAddress.custom_attributes',
                 'template' => 'ui/form/field',
@@ -24,12 +24,15 @@ class LayoutProcessor
             'validation' => ['required-entry' => false],
             'sortOrder' => 255,
             'id' => 'district',
-            'options' => [
-                [
-                    'value' => '',
-                    'label' => __('Please select a district.'),
-                ]
-            ]
+            'imports' => [
+                'initialOptions' => 'index = checkoutProvider:dictionaries.district',
+                'setOptions' => 'index = checkoutProvider:dictionaries.district'
+            ],
+            'filterBy' => [
+                'target' => 'checkoutProvider:shippingAddress.region_id',
+                'field' => 'region_id'
+            ],
+            'deps' => 'checkoutProvider'
         ];
 
         return $result;

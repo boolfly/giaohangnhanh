@@ -37,17 +37,7 @@ class EstimateByExtendedAddressBefore
     ) {
         /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->quoteRepository->getActive($cartId);
-        $checkoutFields = $address->getExtensionAttributes()->getCheckoutFields();
-        $district = '';
-
-        if ($checkoutFields) {
-            foreach ($checkoutFields as $field) {
-                if ($field->getAttributeCode() == 'district') {
-                    $district = $field->getValue();
-                    break;
-                }
-            }
-        }
+        $district = $address->getExtensionAttributes()->getDistrict();
 
         if (!$district) {
             return;

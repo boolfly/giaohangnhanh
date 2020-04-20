@@ -45,31 +45,29 @@ class ShippingInformationManagement
         $cartId,
         ShippingInformationInterface $addressInformation
     ) {
-        if (false !== strpos($addressInformation->getShippingMethodCode(), Config::GHN_CODE)) {
-            $quote = $this->quoteRepository->getActive($cartId);
-            $extensionAttributes = $addressInformation->getExtensionAttributes();
-            $shippingAddress = $quote->getShippingAddress();
-            $district = '';
+        $quote = $this->quoteRepository->getActive($cartId);
+        $extensionAttributes = $addressInformation->getExtensionAttributes();
+        $shippingAddress = $quote->getShippingAddress();
+        $district = '';
 
-            if ($shippingAddress->getDistrict()) {
-                return;
-            }
+        if ($shippingAddress->getDistrict()) {
+            return;
+        }
 
-            if (!$extensionAttributes->getDistrict()) {
-                if ($customerAddressId = $shippingAddress->getCustomerAddressId()) {
-                    $address = $this->customerAddressFactory->create()->load($customerAddressId);
+        if (!$extensionAttributes->getDistrict()) {
+            if ($customerAddressId = $shippingAddress->getCustomerAddressId()) {
+                $address = $this->customerAddressFactory->create()->load($customerAddressId);
 
-                    if ($address->getId()) {
-                        $district = $address->getDistrict();
-                    }
+                if ($address->getId()) {
+                    $district = $address->getDistrict();
                 }
-            } else {
-                $district = $extensionAttributes->getDistrict();
             }
+        } else {
+            $district = $extensionAttributes->getDistrict();
+        }
 
-            if ($district) {
-                $shippingAddress->setDistrict($district);
-            }
+        if ($district) {
+            $shippingAddress->setDistrict($district);
         }
     }
 }
