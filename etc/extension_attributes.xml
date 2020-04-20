@@ -4,4 +4,13 @@
     <extension_attributes for="Magento\Checkout\Api\Data\ShippingInformationInterface">
         <attribute code="district" type="string" />
     </extension_attributes>
+    <extension_attributes for="Magento\Customer\Api\Data\AddressInterface">
+        <attribute code="district" type="string" />
+    </extension_attributes>
+    <extension_attributes for="Magento\Quote\Api\Data\AddressInterface">
+        <attribute code="district" type="string" />
+    </extension_attributes>
+    <extension_attributes for="Magento\Checkout\Api\Data\TotalsInformationInterface">
+        <attribute code="district" type="string" />
+    </extension_attributes>
 </config>
