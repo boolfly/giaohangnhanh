@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="shipping_address">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Boolfly_GiaoHangNhanh::order/create/form/address.phtml</argument>
+            </action>
+            <arguments>
+                <!-- Newly added block argument -->
+                <argument name="additional_config" xsi:type="object">
+                    Boolfly\GiaoHangNhanh\Block\Customer\DataProviders\AdditionalConfig
+                </argument>
+            </arguments>
+        </referenceBlock>
+        <referenceBlock name="billing_address">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Boolfly_GiaoHangNhanh::order/create/form/address.phtml</argument>
+            </action>
+            <arguments>
+                <!-- Newly added block argument -->
+                <argument name="additional_config" xsi:type="object">
+                    Boolfly\GiaoHangNhanh\Block\Customer\DataProviders\AdditionalConfig
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>
