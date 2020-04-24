@@ -2,13 +2,12 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\DistrictProviderInterface;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Zend_Http_Client_Exception;
 
-class DistrictProvider extends Service implements DistrictProviderInterface
+class DistrictProvider extends Service
 {
     /**
      * @return array

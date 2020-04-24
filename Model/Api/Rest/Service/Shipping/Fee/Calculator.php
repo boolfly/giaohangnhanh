@@ -2,13 +2,12 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Fee;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Fee\CalculatorInterface;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Zend_Http_Client_Exception;
 
-class Calculator extends Service implements CalculatorInterface
+class Calculator extends Service
 {
     /**
      * @param array $request

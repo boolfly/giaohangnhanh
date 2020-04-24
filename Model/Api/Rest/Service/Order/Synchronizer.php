@@ -2,7 +2,6 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\SynchronizerInterface;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Magento\Framework\Exception\LocalizedException;
@@ -16,8 +15,11 @@ use Magento\Store\Model\StoreManagerInterface;
 use Psr\Log\LoggerInterface;
 use Zend_Http_Client_Exception;
 
-class Synchronizer extends Service implements SynchronizerInterface
+class Synchronizer extends Service
 {
+    const GHN_STATUS_FAIL = 0;
+    const GHN_STATUS_SUCCESS = 1;
+
     /**
      * @var StoreManagerInterface
      */

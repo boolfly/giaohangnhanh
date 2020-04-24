@@ -2,14 +2,15 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\TrackerInterface;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Zend_Http_Client_Exception;
 
-class Tracker extends Service implements TrackerInterface
+class Tracker extends Service
 {
+    const DEFAULT_ORDER_STATUS = 'ReadyToPick';
+
     /**
      * @param string $trackingCode
      * @return string
