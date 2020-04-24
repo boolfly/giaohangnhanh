@@ -2,8 +2,8 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Carrier;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Fee\CalculatorInterface;
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Services\ProviderInterface;
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Fee\Calculator;
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Services\Provider;
 use Exception;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -51,12 +51,12 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     protected $config;
 
     /**
-     * @var CalculatorInterface
+     * @var Calculator
      */
     protected $calculator;
 
     /**
-     * @var ProviderInterface
+     * @var Provider
      */
     protected $serviceProvider;
 
@@ -73,8 +73,8 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
      * @param ResultFactory $rateResultFactory
      * @param MethodFactory $rateMethodFactory
      * @param Config $config
-     * @param CalculatorInterface $calculator
-     * @param ProviderInterface $serviceProvider
+     * @param Calculator $calculator
+     * @param Provider $serviceProvider
      * @param array $data
      */
     public function __construct(
@@ -84,8 +84,8 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         ResultFactory $rateResultFactory,
         MethodFactory $rateMethodFactory,
         Config $config,
-        CalculatorInterface $calculator,
-        ProviderInterface $serviceProvider,
+        Calculator $calculator,
+        Provider $serviceProvider,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
