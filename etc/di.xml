@@ -3,11 +3,6 @@
     <preference for="Magento\Checkout\Block\Cart\LayoutProcessor" type="Boolfly\GiaoHangNhanh\Block\Cart\LayoutProcessor"/>
     <preference for="Magento\Checkout\Block\Checkout\AttributeMerger" type="Boolfly\GiaoHangNhanh\Block\Checkout\AttributeMerger"/>
     <preference for="Magento\Customer\Controller\Address\FormPost" type="Boolfly\GiaoHangNhanh\Controller\Customer\Address\FormPost"/>
-    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\SynchronizerInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Synchronizer"/>
-    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\DistrictProviderInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\DistrictProvider"/>
-    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Fee\CalculatorInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Fee\Calculator"/>
-    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Shipping\Services\ProviderInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Services\Provider"/>
-    <preference for="Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\TrackerInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Tracker"/>
     <type name="Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand">
         <arguments>
             <!-- configure the command name via constructor $name argument -->
@@ -28,6 +23,7 @@
             <argument name="columns" xsi:type="array">
                 <item name="ghn_status" xsi:type="string">sales_order.ghn_status</item>
                 <item name="tracking_code" xsi:type="string">sales_order.tracking_code</item>
+                <item name="ghn_canceling_status" xsi:type="string">sales_order.ghn_canceling_status</item>
             </argument>
         </arguments>
     </virtualType>
@@ -52,5 +48,11 @@
     </type>
     <type name="Magento\Sales\Model\Order">
         <plugin name="CanCancelAfter" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Model\Order" sortOrder="12" />
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Address">
+        <plugin name="ShippingAddress-GetFormValuesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Shipping\Address" sortOrder="12" />
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\Create\Billing\Address">
+        <plugin name="BillingAddress-GetFormValuesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Billing\Address" sortOrder="12" />
     </type>
 </config>

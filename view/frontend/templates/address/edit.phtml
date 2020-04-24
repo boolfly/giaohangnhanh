@@ -193,6 +193,10 @@
         </div>
     </div>
 </form>
+<?php
+    $defaultDistrict = $block->getAddress()->getCustomAttribute('district');
+?>
+?>
 <script type="text/x-magento-init">
     {
         "#form-validate": {
@@ -216,7 +220,7 @@
             "districtUpdater": {
                 "districtListId": "#district_id",
                 "defaultRegion": "<?= (int) $block->getRegionId() ?>",
-                "defaultDistrict": "<?= $block->getAddress()->getCustomAttribute('district')->getValue() ?>",
+                "defaultDistrict": "<?= $defaultDistrict ? $defaultDistrict->getValue() : '' ?>",
                 "jsonConfig": <?= /* @noEscape */ $block->getAdditionalConfig()->getJsonData(); ?>
             }
         }

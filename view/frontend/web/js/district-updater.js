@@ -10,7 +10,6 @@ define([
     $.widget('boolfly.districtUpdater', {
         options: {
             isRegionRequired: true,
-            currentRegion: null,
             districtList: null,
             defaultDistrict: ''
         },
