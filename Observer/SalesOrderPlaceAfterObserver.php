@@ -2,14 +2,17 @@
 
 namespace Boolfly\GiaoHangNhanh\Observer;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\SynchronizerInterface;
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Synchronizer;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteRepository;
 use Psr\Log\LoggerInterface;
+use Zend_Http_Client_Exception;
 
-class SalesOrderPlaceAfterSObserver implements ObserverInterface
+class SalesOrderPlaceAfterObserver implements ObserverInterface
 {
     /**
      * @var QuoteRepository
@@ -22,7 +25,7 @@ class SalesOrderPlaceAfterSObserver implements ObserverInterface
     private $logger;
 
     /**
-     * @var SynchronizerInterface
+     * @var Synchronizer
      */
     private $synchronizer;
 
@@ -30,12 +33,12 @@ class SalesOrderPlaceAfterSObserver implements ObserverInterface
      * SalesOrderAfterSaveObserver constructor.
      * @param QuoteRepository $quoteRepository
      * @param LoggerInterface $logger
-     * @param SynchronizerInterface $synchronizer
+     * @param Synchronizer $synchronizer
      */
     public function __construct(
         QuoteRepository $quoteRepository,
         LoggerInterface $logger,
-        SynchronizerInterface $synchronizer
+        Synchronizer $synchronizer
     ) {
         $this->logger = $logger;
         $this->quoteRepository = $quoteRepository;
@@ -44,6 +47,10 @@ class SalesOrderPlaceAfterSObserver implements ObserverInterface
 
     /**
      * @inheritDoc
+     * @param Observer $observer
+     * @throws NoSuchEntityException
+     * @throws LocalizedException
+     * @throws Zend_Http_Client_Exception
      */
     public function execute(Observer $observer)
     {
@@ -51,7 +58,7 @@ class SalesOrderPlaceAfterSObserver implements ObserverInterface
         $order = $observer->getEvent()->getOrder();
 
         if (false !== strpos($order->getShippingMethod(), Config::GHN_CODE)) {
-            $quote = $this->quoteRepository->getActive($order->getQuoteId());
+            $quote = $this->quoteRepository->get($order->getQuoteId());
             $shippingAddress = $quote->getShippingAddress();
             $additionalData = [
                 'district' => $shippingAddress->getDistrict(),
