@@ -127,14 +127,17 @@
                     <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\NoteCode</source_model>
                 </field>
                 <field id="district" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>District</label>
+                    <label>Store District</label>
                     <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\District</source_model>
                 </field>
                 <field id="get_services_url" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Getting Available Services Api Url</label>
                 </field>
-                <field id="get_order_infor" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="get_order_infor_url" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Getting Order Infor Api Url</label>
+                </field>
+                <field id="cancel_order_url" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                    <label>Canceling Order Api Url</label>
                 </field>
             </group>
         </section>

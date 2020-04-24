@@ -27,7 +27,8 @@ class Config
     const NOTE_CODE = 'giaohangnhanh_setting/general/note_code';
     const DISTRICT = 'giaohangnhanh_setting/general/district';
     const GETTING_SERVICES_URL = 'giaohangnhanh_setting/general/get_services_url';
-    const GETTING_ORDER_INFOR = 'giaohangnhanh_setting/general/get_order_infor';
+    const GETTING_ORDER_INFOR = 'giaohangnhanh_setting/general/get_order_infor_url';
+    const CANCELING_ORDER_URL = 'giaohangnhanh_setting/general/cancel_order_url';
 
     /**
      * @var int
@@ -117,6 +118,15 @@ class Config
     public function getGettingServicesUrl()
     {
         return $this->getConfig(self::GETTING_SERVICES_URL);
+    }
+
+    /**
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
+    public function getCancelingOrderUrl()
+    {
+        return $this->getConfig(self::CANCELING_ORDER_URL);
     }
 
     /**
