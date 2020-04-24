@@ -2,7 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Plugin\Sales\Model;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\Order\TrackerInterface;
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Tracker;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Model\Order as MageOrder;
@@ -11,15 +11,15 @@ use Zend_Http_Client_Exception;
 class Order
 {
     /**
-     * @var TrackerInterface
+     * @var Tracker
      */
     private $tracker;
 
     /**
      * Order constructor.
-     * @param TrackerInterface $tracker
+     * @param Tracker $tracker
      */
-    public function __construct(TrackerInterface $tracker)
+    public function __construct(Tracker $tracker)
     {
         $this->tracker = $tracker;
     }
@@ -38,7 +38,7 @@ class Order
         $status = $subject->getData('ghn_status');
 
         if ($status && $trackingCode) {
-            if ($this->tracker->getOrderStatus($trackingCode) != TrackerInterface::DEFAULT_ORDER_STATUS) {
+            if ($this->tracker->getOrderStatus($trackingCode) != Tracker::DEFAULT_ORDER_STATUS) {
                 $result = false;
             }
         }
