@@ -37,7 +37,7 @@ class AdditionalConfig implements ArgumentInterface
      *
      * @return array
      */
-    public function getSerializedDistricts()
+    private function getDistricts()
     {
         $districts = $this->config->getDistricts();
         $data = [];
@@ -56,7 +56,7 @@ class AdditionalConfig implements ArgumentInterface
     public function getJsonData(): string
     {
         return $this->serializer->serialize([
-            'districts' => $this->getSerializedDistricts()
+            'districts' => $this->getDistricts()
         ]);
     }
 }
