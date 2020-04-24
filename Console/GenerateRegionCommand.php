@@ -2,7 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Console;
 
-use Boolfly\GiaoHangNhanh\Api\Rest\Service\DistrictProviderInterface;
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\DistrictProvider;
 use Magento\Directory\Model\RegionFactory;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\LocalizedException;
@@ -25,7 +25,7 @@ class GenerateRegionCommand extends Command
     private $regionFactory;
 
     /**
-     * @var DistrictProviderInterface
+     * @var DistrictProvider
      */
     private $districtProvider;
 
@@ -33,13 +33,13 @@ class GenerateRegionCommand extends Command
      * GeneratingRegionData constructor.
      * @param ResourceConnection $resourceConnection
      * @param RegionFactory $regionFactory
-     * @param DistrictProviderInterface $districtProvider
+     * @param DistrictProvider $districtProvider
      * @param string|null $name
      */
     public function __construct(
         ResourceConnection $resourceConnection,
         RegionFactory $regionFactory,
-        DistrictProviderInterface $districtProvider,
+        DistrictProvider $districtProvider,
         $name = null
     ) {
         $this->resourceConnection = $resourceConnection;
@@ -70,16 +70,18 @@ class GenerateRegionCommand extends Command
             $output->writeln('<info>Generating data. Please wait...</info>');
             foreach ($data as $item) {
                 $provinceId = $item['ProvinceID'];
+                $districtId = $item['DistrictID'];
                 $region = $this->regionFactory->create()
                     ->loadByCode($provinceId, 'VN');
 
                 $this->insertData(
                     'boolfly_giaohangnhanh_district',
                     [
-                        'district_id' => $item['DistrictID'],
+                        'district_id' => $districtId,
                         'province_id' => $provinceId,
                         'district_name' => $item['DistrictName']
-                    ]
+                    ],
+                    ['col' => 'district_id', 'val' => $districtId]
                 );
 
                 if (!$region->getId()) {
@@ -102,12 +104,42 @@ class GenerateRegionCommand extends Command
     /**
      * @param string $tableName
      * @param array $data
+     * @param array $pairOfColAndVal
      */
-    private function insertData($tableName, $data)
+    private function insertData($tableName, $data, $pairOfColAndVal = [])
     {
-        $this->resourceConnection->getConnection()->insert(
-            $this->resourceConnection->getTableName($tableName),
-            $data
-        );
+        if (!$this->checkRecordExist($tableName, $pairOfColAndVal)) {
+            $this->resourceConnection->getConnection()->insert(
+                $this->resourceConnection->getTableName($tableName),
+                $data
+            );
+        }
+    }
+
+
+    /**
+     * @param string $tableName
+     * @param array $pairOfColAndVal
+     * @return bool
+     */
+    private function checkRecordExist($tableName, $pairOfColAndVal = [])
+    {
+        $checkingFlag = false;
+
+        if ($pairOfColAndVal) {
+            $connection = $this->resourceConnection->getConnection();
+            $sql = $connection->select()->from(
+                ['districtTable' => $this->resourceConnection->getTableName($tableName)],
+                $pairOfColAndVal['col']
+            )->where($pairOfColAndVal['col'] . ' = ?', $pairOfColAndVal['val']);
+
+            $rows = $connection->fetchAll($sql);
+
+            if (count($rows)) {
+                $checkingFlag = true;
+            }
+        }
+
+        return $checkingFlag;
     }
 }
