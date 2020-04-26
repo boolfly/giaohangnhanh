@@ -55,7 +55,9 @@ class ShippingInformationManagement
         }
 
         if (!$extensionAttributes->getDistrict()) {
-            if ($customerAddressId = $shippingAddress->getCustomerAddressId()) {
+            $customerAddressId = $addressInformation->getShippingAddress()->getCustomerAddressId();
+
+            if ($customerAddressId) {
                 $address = $this->customerAddressFactory->create()->load($customerAddressId);
 
                 if ($address->getId()) {
