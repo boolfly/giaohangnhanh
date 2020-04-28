@@ -3,6 +3,7 @@
     <preference for="Magento\Checkout\Block\Cart\LayoutProcessor" type="Boolfly\GiaoHangNhanh\Block\Cart\LayoutProcessor"/>
     <preference for="Magento\Checkout\Block\Checkout\AttributeMerger" type="Boolfly\GiaoHangNhanh\Block\Checkout\AttributeMerger"/>
     <preference for="Magento\Customer\Controller\Address\FormPost" type="Boolfly\GiaoHangNhanh\Controller\Customer\Address\FormPost"/>
+    <!--<preference for="Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReaderInterface" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReader"/>-->
     <type name="Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand">
         <arguments>
             <!-- configure the command name via constructor $name argument -->
@@ -54,5 +55,46 @@
     </type>
     <type name="Magento\Sales\Block\Adminhtml\Order\Create\Billing\Address">
         <plugin name="BillingAddress-GetFormValuesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Billing\Address" sortOrder="12" />
+    </type>
+    <!--Process response data-->
+    <virtualType name="CalculateFeeReader" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReader">
+        <arguments>
+            <argument name="property" xsi:type="string">CalculatedFee</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CurrentStatusReader" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReader">
+        <arguments>
+            <argument name="property" xsi:type="string">CurrentStatus</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="OrderCodeReader" type="Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReader">
+        <arguments>
+            <argument name="property" xsi:type="string">OrderCode</argument>
+        </arguments>
+    </virtualType>
+    <type name="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Fee\Calculator">
+        <arguments>
+            <argument name="responseReader" xsi:type="object">CalculateFeeReader</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Tracker">
+        <arguments>
+            <argument name="responseReader" xsi:type="object">CurrentStatusReader</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Synchronizer">
+        <arguments>
+            <argument name="responseReader" xsi:type="object">OrderCodeReader</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Services\Provider">
+        <arguments>
+            <argument name="responseReader" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReader</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\DistrictProvider">
+        <arguments>
+            <argument name="responseReader" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReader</argument>
+        </arguments>
     </type>
 </config>
