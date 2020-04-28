@@ -159,24 +159,12 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
 
             if ($serviceId = $this->getAvailableService()) {
                 $requestBody['ServiceID'] = $serviceId;
-                $this->updateShippingServiceForAddress($request, $shippingAddress, $serviceId);
+                $shippingAddress->setData('shipping_service_id', $serviceId);
                 $shippingFee = $this->calculator->calculate($requestBody);
             }
         }
 
         return $shippingFee;
-    }
-
-    /**
-     * @param RateRequest $request
-     * @param Address $shippingAddress
-     * @param string $serviceId
-     */
-    protected function updateShippingServiceForAddress(RateRequest $request, Address $shippingAddress, $serviceId)
-    {
-        if ($request->getLimitCarrier()) {
-            $shippingAddress->setData('shipping_service_id', $serviceId);
-        }
     }
 
     /**
