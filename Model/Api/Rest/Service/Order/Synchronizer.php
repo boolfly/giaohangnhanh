@@ -2,6 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order;
 
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReaderInterface;
 use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Magento\Framework\Exception\LocalizedException;
@@ -44,6 +45,7 @@ class Synchronizer extends Service
      * @param StoreManagerInterface $storeManager
      * @param Information $storeInformation
      * @param AddressFactory $addressFactory
+     * @param ResponseReaderInterface|null $responseReader
      */
     public function __construct(
         LoggerInterface $log,
@@ -52,9 +54,10 @@ class Synchronizer extends Service
         ZendClientFactory $httpClientFactory,
         StoreManagerInterface $storeManager,
         Information $storeInformation,
-        AddressFactory $addressFactory
+        AddressFactory $addressFactory,
+        ResponseReaderInterface $responseReader = null
     ) {
-        parent::__construct($log, $config, $serializer, $httpClientFactory);
+        parent::__construct($log, $config, $serializer, $httpClientFactory, $responseReader);
         $this->storeManager = $storeManager;
         $this->storeInformation = $storeInformation;
         $this->addressFactory = $addressFactory;
@@ -103,9 +106,9 @@ class Synchronizer extends Service
 
         $response = $this->makeRequest($config->getSynchronizingOrderUrl(), $data);
 
-        if ($this->checkResponse($response)) {
+        if ($trackingCode = $this->responseReader->read($response)) {
             $order->setData('ghn_status', self::GHN_STATUS_SUCCESS);
-            $order->setData('tracking_code', $response['response_object']['data']['OrderCode']);
+            $order->setData('tracking_code', $trackingCode);
         } else {
             $order->setData('ghn_status', self::GHN_STATUS_FAIL);
         }

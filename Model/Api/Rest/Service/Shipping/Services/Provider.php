@@ -19,14 +19,12 @@ class Provider extends Service
     public function getShippingServices($request)
     {
         $response = $this->makeRequest($this->config->getGettingServicesUrl(), $request);
-        $data = [];
+        $shippingServices = [];
 
-        if ($this->checkResponse($response)) {
-            if (is_array($response['response_object']['data'])) {
-                $data = $response['response_object']['data'];
-            }
+        if (is_array($this->responseReader->read($response))) {
+            $shippingServices = $this->responseReader->read($response);
         }
 
-        return $data;
+        return $shippingServices;
     }
 }

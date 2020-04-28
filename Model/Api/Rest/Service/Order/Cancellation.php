@@ -26,6 +26,6 @@ class Cancellation extends Service
             ]
         );
 
-        return $this->checkResponse($response);
+        return $response ? true : false;
     }
 }

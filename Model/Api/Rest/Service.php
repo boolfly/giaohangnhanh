@@ -2,6 +2,7 @@
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest;
 
+use Boolfly\GiaoHangNhanh\Model\Api\Rest\Helper\ResponseReaderInterface;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Exception;
 use Magento\Framework\Exception\LocalizedException;
@@ -34,22 +35,30 @@ abstract class Service
     protected $config;
 
     /**
+     * @var ResponseReaderInterface|null
+     */
+    protected $responseReader;
+
+    /**
      * Service constructor.
      * @param LoggerInterface $log
      * @param Config $config
      * @param SerializerInterface $serializer
      * @param ZendClientFactory $httpClientFactory
+     * @param ResponseReaderInterface|null $responseReader
      */
     public function __construct(
         LoggerInterface $log,
         Config $config,
         SerializerInterface $serializer,
-        ZendClientFactory $httpClientFactory
+        ZendClientFactory $httpClientFactory,
+        ResponseReaderInterface $responseReader = null
     ) {
         $this->log = $log;
         $this->config = $config;
         $this->serializer = $serializer;
         $this->httpClientFactory = $httpClientFactory;
+        $this->responseReader = $responseReader;
     }
 
     /**
@@ -70,47 +79,18 @@ abstract class Service
 
         try {
             $response = $client->request();
-            $response = $this->processResponse($response);
-            return $response;
+            $responseData = [];
+
+            if ($response->isSuccessful()) {
+                $responseData = $this->serializer->unserialize((string)$response->getBody());
+            } else {
+                $this->log->error(__('Bad request.'));
+            }
+
+            return $responseData;
         } catch (Exception $e) {
+            $this->log->error($e->getMessage());
             throw new LocalizedException(__('The transaction details are unavailable. Please try again later.'));
         }
-    }
-
-    /**
-     * @param $response
-     * @return array
-     */
-    protected function processResponse($response)
-    {
-        $data = [];
-
-        try {
-            $body = $this->serializer->unserialize((string)$response->getBody());
-        } catch (Exception $e) {
-            $body = $e->getMessage();
-        }
-
-        $data['response_object'] = $body;
-        $data['response_status_code'] = $response->getStatus();
-        $data['response_status_message'] = $response->getMessage();
-
-        return $data;
-    }
-
-    /**
-     * Was the response successful?
-     *
-     * @param $response
-     * @return bool
-     */
-    protected function checkResponse($response)
-    {
-        if (!empty($response['response_status_code'])) {
-            $code = $response['response_status_code'];
-            return (200 <= $code && 300 > $code);
-        }
-
-        return false;
     }
 }

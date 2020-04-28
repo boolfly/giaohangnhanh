@@ -27,12 +27,7 @@ class Tracker extends Service
                 'OrderCode' => $trackingCode
             ]
         );
-        $data = '';
 
-        if ($this->checkResponse($response)) {
-            $data = $response['response_object']['data']['CurrentStatus'];
-        }
-
-        return $data;
+        return $this->responseReader->read($response);
     }
 }

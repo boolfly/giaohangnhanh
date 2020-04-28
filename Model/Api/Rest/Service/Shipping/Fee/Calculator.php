@@ -23,10 +23,6 @@ class Calculator extends Service
             $request
         );
 
-        if ($this->checkResponse($response)) {
-            return (float)$response['response_object']['data']['CalculatedFee'];
-        }
-
-        return null;
+        return (float)$this->responseReader->read($response);
     }
 }

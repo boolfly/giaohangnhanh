@@ -17,22 +17,16 @@ class DistrictProvider extends Service
      */
     public function getDistrictList()
     {
-        $data = [];
+        $districts = [];
         $response = $this->makeRequest(
             $this->config->getGettingDistrictsUrl(),
             ['token' => $this->config->getApiToken()]
         );
 
-        if ($this->checkResponse($response)) {
-            $responseObject = $response['response_object'];
-
-            if (!empty($responseObject['data'])) {
-                if (is_array($responseObject['data'])) {
-                    $data = $responseObject['data'];
-                }
-            }
+        if (is_array($this->responseReader->read($response))) {
+            $districts = $this->responseReader->read($response);
         }
 
-        return $data;
+        return $districts;
     }
 }
