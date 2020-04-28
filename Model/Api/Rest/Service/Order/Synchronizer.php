@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order;
 
@@ -91,7 +91,7 @@ class Synchronizer extends Service
             'CustomerPhone' => $order->getShippingAddress()->getTelephone(),
             'ShippingAddress' => $order->getShippingAddress()->getStreetLine(1),
             'NoteCode' => $config->getNoteCode(),
-            'ServiceID' => $additionalData['shipping_service_id'],
+            'ServiceID' => (int)$additionalData['shipping_service_id'],
             'Weight' => $order->getWeight() * $weightRate,
             'Length' => 10,
             'Width' => 10,

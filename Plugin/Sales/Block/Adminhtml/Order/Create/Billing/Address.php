@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Billing;
 
