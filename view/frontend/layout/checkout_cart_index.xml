@@ -16,31 +16,6 @@
                                 </item>
                             </item>
                         </item>
-                        <item name="block-summary" xsi:type="array">
-                            <item name="children" xsi:type="array">
-                                <item name="block-shipping" xsi:type="array">
-                                    <item name="children" xsi:type="array">
-                                        <item name="address-fieldsets" xsi:type="array">
-                                            <item name="children" xsi:type="array">
-                                                <item name="district" xsi:type="array">
-                                                    <item name="component" xsi:type="string">Boolfly_GiaoHangNhanh/js/view/cart/shipping/district</item>
-                                                    <item name="sortOrder" xsi:type="string">152</item>
-                                                    <item name="config" xsi:type="array">
-                                                        <item name="template" xsi:type="string">ui/form/field</item>
-                                                        <item name="elementTmpl" xsi:type="string">ui/form/element/select</item>
-                                                    </item>
-                                                    <!-- Value of region_id field is filtered by the value of county_id attribute -->
-                                                    <item name="filterBy" xsi:type="array">
-                                                        <item name="target" xsi:type="string"><![CDATA[${ $.provider }:${ $.parentScope }.region_id]]></item>
-                                                        <item name="field" xsi:type="string">region_id</item>
-                                                    </item>
-                                                </item>
-                                            </item>
-                                        </item>
-                                    </item>
-                                </item>
-                            </item>
-                        </item>
                     </item>
                 </argument>
             </arguments>
