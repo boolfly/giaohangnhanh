@@ -1,9 +1,21 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout;
 
 use Magento\Checkout\Block\Checkout\LayoutProcessor as MageLayoutProcessor;
 
+/**
+ * Class LayoutProcessor
+ *
+ * @package Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout
+ */
 class LayoutProcessor
 {
     public function afterProcess(MageLayoutProcessor $subject, $result)

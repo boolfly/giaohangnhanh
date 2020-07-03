@@ -1,17 +1,28 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Console;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\DistrictProvider;
+use Boolfly\GiaoHangNhanh\Model\Service\Helper\SubjectReader;
+use Boolfly\IntegrationBase\Model\Service\Command\CommandPoolInterface;
 use Magento\Directory\Model\RegionFactory;
 use Magento\Framework\App\ResourceConnection;
 use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Zend_Http_Client_Exception;
 
+/**
+ * Class GenerateRegionCommand
+ *
+ * @package Boolfly\GiaoHangNhanh\Console
+ */
 class GenerateRegionCommand extends Command
 {
     /**
@@ -25,26 +36,26 @@ class GenerateRegionCommand extends Command
     private $regionFactory;
 
     /**
-     * @var DistrictProvider
+     * @var CommandPoolInterface
      */
-    private $districtProvider;
+    private $commandPool;
 
     /**
      * GeneratingRegionData constructor.
      * @param ResourceConnection $resourceConnection
      * @param RegionFactory $regionFactory
-     * @param DistrictProvider $districtProvider
+     * @param CommandPoolInterface $commandPool
      * @param string|null $name
      */
     public function __construct(
         ResourceConnection $resourceConnection,
         RegionFactory $regionFactory,
-        DistrictProvider $districtProvider,
+        CommandPoolInterface $commandPool,
         $name = null
     ) {
         $this->resourceConnection = $resourceConnection;
         $this->regionFactory = $regionFactory;
-        $this->districtProvider = $districtProvider;
+        $this->commandPool = $commandPool;
         parent::__construct($name);
     }
 
@@ -58,13 +69,12 @@ class GenerateRegionCommand extends Command
      * @param InputInterface $input
      * @param OutputInterface $output
      * @return int|void|null
-     * @throws NoSuchEntityException
      * @throws LocalizedException
-     * @throws Zend_Http_Client_Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $data = $this->districtProvider->getDistrictList();
+        $commandResult = $this->commandPool->get('get_districts')->execute([]);
+        $data = SubjectReader::readDistricts($commandResult->get());
 
         if ($data) {
             $output->writeln('<info>Generating data. Please wait...</info>');

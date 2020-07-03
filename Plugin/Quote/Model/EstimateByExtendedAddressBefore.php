@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Plugin\Quote\Model;
 
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -7,6 +14,11 @@ use Magento\Quote\Api\Data\AddressInterface;
 use Magento\Quote\Model\QuoteRepository;
 use Magento\Quote\Model\ShippingMethodManagement as MageShippingMethodManagement;
 
+/**
+ * Class EstimateByExtendedAddressBefore
+ *
+ * @package Boolfly\GiaoHangNhanh\Plugin\Quote\Model
+ */
 class EstimateByExtendedAddressBefore
 {
     /**

@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Plugin\Shipping\Model;
 
 use Magento\Framework\Exception\LocalizedException;
@@ -8,6 +15,11 @@ use Magento\Quote\Model\Quote\Address\RateRequest;
 use Magento\Quote\Model\Quote\Item\AbstractItem;
 use Magento\Shipping\Model\Shipping as MageShipping;
 
+/**
+ * Class Shipping
+ *
+ * @package Boolfly\GiaoHangNhanh\Plugin\Shipping\Model
+ */
 class Shipping
 {
     /**

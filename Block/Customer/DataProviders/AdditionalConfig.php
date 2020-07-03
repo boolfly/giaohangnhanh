@@ -1,11 +1,23 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Block\Customer\DataProviders;
 
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Magento\Framework\Serialize\SerializerInterface;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 
+/**
+ * Class AdditionalConfig
+ *
+ * @package Boolfly\GiaoHangNhanh\Block\Customer\DataProviders
+ */
 class AdditionalConfig implements ArgumentInterface
 {
     /**

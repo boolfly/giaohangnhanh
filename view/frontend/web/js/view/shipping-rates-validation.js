@@ -13,8 +13,6 @@ define([
 ) {
     'use strict';
 
-    defaultShippingRatesValidator.registerValidator('giaohangnhanh_express', ghnShippingRatesValidator);
-    defaultShippingRatesValidationRules.registerRules('giaohangnhanh_express', ghnShippingRatesValidationRules);
     defaultShippingRatesValidator.registerValidator('giaohangnhanh_standard', ghnShippingRatesValidator);
     defaultShippingRatesValidationRules.registerRules('giaohangnhanh_standard', ghnShippingRatesValidationRules);
 

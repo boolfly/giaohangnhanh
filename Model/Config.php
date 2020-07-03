@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Model;
 
 use Magento\Directory\Helper\Data;
@@ -9,26 +16,27 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * Class Config
+ *
+ * @package Boolfly\GiaoHangNhanh\Model
+ */
 class Config
 {
+    const DEFAULT_PATH_PATTERN = 'giaohangnhanh_setting/%s/%s';
+    const INTEGRATION_TYPE = 'general';
     const GHN_CODE = 'giaohangnhanh';
     const LBS_G = 453.59237;
     const KGS_G = 1000;
     const IS_ACTIVE = 'active';
     const TITLE = 'title';
     const NAME = 'name';
-    const SALLOWSPECIFIC = 'sallowspecific';
-    const SPECIFICCOUNTRY = 'specificcountry';
-    const API_TOKEN = 'giaohangnhanh_setting/general/api_token';
-    const PAYMENT_TYPE = 'giaohangnhanh_setting/general/payment_type';
-    const CALCULATING_FEE_URL = 'giaohangnhanh_setting/general/calculate_fee_url';
-    const SYNCHRONIZING_ORDER_URL = 'giaohangnhanh_setting/general/sync_order_url';
-    const GETTING_DISTRICTS_URL = 'giaohangnhanh_setting/general/get_districts_url';
-    const NOTE_CODE = 'giaohangnhanh_setting/general/note_code';
-    const DISTRICT = 'giaohangnhanh_setting/general/district';
-    const GETTING_SERVICES_URL = 'giaohangnhanh_setting/general/get_services_url';
-    const GETTING_ORDER_INFOR = 'giaohangnhanh_setting/general/get_order_infor_url';
-    const CANCELING_ORDER_URL = 'giaohangnhanh_setting/general/cancel_order_url';
+    const CALCULATING_FEE_URL = 'calculate_fee_url';
+    const SYNCHRONIZING_ORDER_URL = 'sync_order_url';
+    const GETTING_DISTRICTS_URL = 'get_districts_url';
+    const GETTING_SERVICES_URL = 'get_services_url';
+    const GETTING_ORDER_INFOR = 'get_order_infor_url';
+    const CANCELING_ORDER_URL = 'cancel_order_url';
 
     /**
      * @var int
@@ -64,96 +72,6 @@ class Config
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
         $this->resourceConnection = $resourceConnection;
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getApiToken()
-    {
-        return $this->getConfig(self::API_TOKEN);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getCalculatingFeeUrl()
-    {
-        return $this->getConfig(self::CALCULATING_FEE_URL);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getSynchronizingOrderUrl()
-    {
-        return $this->getConfig(self::SYNCHRONIZING_ORDER_URL);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getGettingDistrictsUrl()
-    {
-        return $this->getConfig(self::GETTING_DISTRICTS_URL);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getGettingOrderInforUrl()
-    {
-        return $this->getConfig(self::GETTING_ORDER_INFOR);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getGettingServicesUrl()
-    {
-        return $this->getConfig(self::GETTING_SERVICES_URL);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getCancelingOrderUrl()
-    {
-        return $this->getConfig(self::CANCELING_ORDER_URL);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getPaymentType()
-    {
-        return $this->getConfig(self::PAYMENT_TYPE);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getNoteCode()
-    {
-        return $this->getConfig(self::NOTE_CODE);
-    }
-
-    /**
-     * @return mixed
-     * @throws NoSuchEntityException
-     */
-    public function getStoreDistrict()
-    {
-        return $this->getConfig(self::DISTRICT);
     }
 
     /**
@@ -206,7 +124,7 @@ class Config
      * @return mixed
      * @throws NoSuchEntityException
      */
-    private function getConfig($path)
+    public function getConfig($path)
     {
         return $this->scopeConfig->getValue(
             $path,

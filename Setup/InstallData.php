@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Setup;
 
 use Magento\Customer\Api\AddressMetadataInterface;
@@ -11,7 +18,9 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 
 /**
- * @codeCoverageIgnore
+ * Class InstallData
+ *
+ * @package Boolfly\GiaoHangNhanh\Setup
  */
 class InstallData implements InstallDataInterface
 {

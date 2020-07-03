@@ -11,10 +11,6 @@
                 <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Method Name</label>
                 </field>
-                <field id="price" translate="label" type="text" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
-                    <label>Price</label>
-                    <validate>validate-number validate-zero-or-greater</validate>
-                </field>
                 <field id="handling_type" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Calculate Handling Fee</label>
                     <source_model>Magento\Shipping\Model\Source\HandlingType</source_model>
@@ -105,22 +101,18 @@
             <resource>Boolfly_GiaoHangNhanh::config_giaohangnhanh</resource>
             <group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>General Settings</label>
-                <field id="api_token" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                <field id="sandbox_flag" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Sandbox Mode</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_token" translate="label" type="obscure" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Api Token</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
                     <comment>Set token to access giaohangnhanh api.</comment>
                 </field>
-                <field id="payment_type" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                <field id="payment_type" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Payment Type</label>
                     <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\PaymentType</source_model>
-                </field>
-                <field id="calculate_fee_url" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Calculating Fee Api Url</label>
-                </field>
-                <field id="sync_order_url" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Synchronizing Order Information Api Url</label>
-                </field>
-                <field id="get_districts_url" translate="label" type="text" sortOrder="4" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Getting District List Api Url</label>
                 </field>
                 <field id="note_code" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
                     <label>Note Code</label>
@@ -130,14 +122,9 @@
                     <label>Store District</label>
                     <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\District</source_model>
                 </field>
-                <field id="get_services_url" translate="label" type="text" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Getting Available Services Api Url</label>
-                </field>
-                <field id="get_order_infor_url" translate="label" type="text" sortOrder="8" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Getting Order Infor Api Url</label>
-                </field>
-                <field id="cancel_order_url" translate="label" type="text" sortOrder="9" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
-                    <label>Canceling Order Api Url</label>
+                <field id="debug" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Debug</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>

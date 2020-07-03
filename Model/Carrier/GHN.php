@@ -1,13 +1,21 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Model\Carrier;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Fee\Calculator;
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Shipping\Services\Provider;
+use Boolfly\GiaoHangNhanh\Helper\Rate;
+use Boolfly\GiaoHangNhanh\Model\Service\Helper\SubjectReader;
+use Boolfly\GiaoHangNhanh\Model\Service\Request\AbstractDataBuilder;
+use Boolfly\IntegrationBase\Model\Service\Command\CommandException;
+use Boolfly\IntegrationBase\Model\Service\Command\CommandPoolInterface;
 use Exception;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Quote\Model\Quote\Address;
+use Magento\Framework\Exception\NotFoundException;
 use Magento\Shipping\Model\Carrier\AbstractCarrier;
 use Psr\Log\LoggerInterface;
 use Boolfly\GiaoHangNhanh\Model\Config;
@@ -19,8 +27,12 @@ use Magento\Quote\Model\Quote\Address\RateResult\MethodFactory;
 use Magento\Shipping\Model\Carrier\CarrierInterface;
 use Magento\Shipping\Model\Rate\Result;
 use Magento\Shipping\Model\Rate\ResultFactory;
-use Zend_Http_Client_Exception;
 
+/**
+ * Class GHN
+ *
+ * @package Boolfly\GiaoHangNhanh\Model\Carrier
+ */
 abstract class GHN extends AbstractCarrier implements CarrierInterface
 {
     const SERVICE_NAME = 'GHN';
@@ -51,19 +63,19 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
     protected $config;
 
     /**
-     * @var Calculator
+     * @var Rate
      */
-    protected $calculator;
-
-    /**
-     * @var Provider
-     */
-    protected $serviceProvider;
+    private $helperRate;
 
     /**
      * @var array
      */
     protected $availableServices = [];
+
+    /**
+     * @var CommandPoolInterface
+     */
+    private $commandPool;
 
     /**
      * GHN constructor.
@@ -73,8 +85,8 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
      * @param ResultFactory $rateResultFactory
      * @param MethodFactory $rateMethodFactory
      * @param Config $config
-     * @param Calculator $calculator
-     * @param Provider $serviceProvider
+     * @param Rate $helperRate
+     * @param CommandPoolInterface $commandPool
      * @param array $data
      */
     public function __construct(
@@ -84,16 +96,16 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         ResultFactory $rateResultFactory,
         MethodFactory $rateMethodFactory,
         Config $config,
-        Calculator $calculator,
-        Provider $serviceProvider,
+        Rate $helperRate,
+        CommandPoolInterface $commandPool,
         array $data = []
     ) {
         parent::__construct($scopeConfig, $rateErrorFactory, $logger, $data);
         $this->rateResultFactory = $rateResultFactory;
         $this->rateMethodFactory = $rateMethodFactory;
         $this->config = $config;
-        $this->calculator = $calculator;
-        $this->serviceProvider = $serviceProvider;
+        $this->helperRate = $helperRate;
+        $this->commandPool = $commandPool;
     }
 
     /**
@@ -133,66 +145,60 @@ abstract class GHN extends AbstractCarrier implements CarrierInterface
         return [$this->_code => $this->getConfigData(Config::NAME)];
     }
 
+
     /**
      * @param RateRequest $request
-     * @return float|null
-     * @throws NoSuchEntityException
-     * @throws LocalizedException
-     * @throws Exception
+     * @return string|null
      */
     protected function estimateShippingCost(RateRequest $request)
     {
         $shippingAddress = $request->getShippingAddress();
-        $districtId = $request->getDistrict();
-        $shippingFee = null;
+        $shippingFee = 0;
 
-        if ($districtId) {
-            $rate = $this->config->getWeightUnit() == 'kgs' ? Config::KGS_G : Config::LBS_G;
-            $requestBody = [
-                'token' => $this->config->getApiToken(),
-                'Weight' => $request->getPackageWeight() * $rate,
-                'FromDistrictID' => (int)$this->config->getStoreDistrict(),
-                'ToDistrictID' => (int)$districtId
-            ];
-
-            $this->prepareServices($requestBody);
-
+        try {
+            $this->prepareServices($request);
             if ($serviceId = $this->getAvailableService()) {
-                $requestBody['ServiceID'] = $serviceId;
                 $shippingAddress->setData('shipping_service_id', $serviceId);
-                $shippingFee = $this->calculator->calculate($requestBody);
+                $commandResult = $this->commandPool->get('calculate_rate')->execute(
+                    [
+                        'rate_request' => $request,
+                        'service_id' => $serviceId
+                    ]
+                );
+                $rate = SubjectReader::readRate($commandResult->get());
+                $shippingFee = SubjectReader::readCalculatedFee($rate);
             }
+            return $this->helperRate->getAmountByStoreCurrency($shippingFee);
+        } catch (Exception $e) {
+            return null;
         }
-
-        return $shippingFee;
     }
 
     /**
-     * @param array $request
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     * @throws Zend_Http_Client_Exception
+     * @param RateRequest $request
+     * @throws CommandException
+     * @throws NotFoundException
      */
     protected function prepareServices($request)
     {
-        $this->availableServices = $this->serviceProvider->getShippingServices($request);
+        $this->availableServices = SubjectReader::readServices(
+            $this->commandPool->get('get_services')->execute(['rate_request' => $request])->get()
+        );
     }
 
     /**
-     * @return string
+     * @return mixed|null
      */
     protected function getAvailableService()
     {
         if (count($this->availableServices)) {
             foreach ($this->availableServices as $serviceItem) {
-                if (!empty($serviceItem['Name'])) {
-                    if ($serviceItem['Name'] == static::SERVICE_NAME) {
-                        return $serviceItem['ServiceID'];
-                    }
+                if (is_array($serviceItem) && SubjectReader::readServiceName($serviceItem) == static::SERVICE_NAME) {
+                    return $serviceItem[AbstractDataBuilder::SERVICE_ID];
                 }
             }
         }
 
-        return '';
+        return null;
     }
 }

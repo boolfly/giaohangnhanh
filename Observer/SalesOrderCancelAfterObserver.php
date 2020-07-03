@@ -1,50 +1,64 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Observer;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Cancellation;
+use Boolfly\IntegrationBase\Model\Service\Command\CommandPoolInterface;
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
-use Zend_Http_Client_Exception;
+use Magento\Sales\Model\Order;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Class SalesOrderCancelAfterObserver
+ *
+ * @package Boolfly\GiaoHangNhanh\Observer
+ */
 class SalesOrderCancelAfterObserver implements ObserverInterface
 {
-    const GHN_SUCCESS_CANCELING_STATUS = 1;
+    /**
+     * @var CommandPoolInterface
+     */
+    private $commandPool;
 
     /**
-     * @var Cancellation
+     * @var LoggerInterface
      */
-    private $cancellation;
+    private $logger;
 
     /**
      * SalesOrderCancelAfterObserver constructor.
-     * @param Cancellation $cancellation
+     * @param CommandPoolInterface $commandPool
+     * @param LoggerInterface $logger
      */
-    public function __construct(Cancellation $cancellation)
-    {
-        $this->cancellation = $cancellation;
+    public function __construct(
+        CommandPoolInterface $commandPool,
+        LoggerInterface $logger
+    ) {
+        $this->commandPool = $commandPool;
+        $this->logger = $logger;
     }
 
     /**
      * @param Observer $observer
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     * @throws Zend_Http_Client_Exception
      */
     public function execute(Observer $observer)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /** @var Order $order */
         $order = $observer->getEvent()->getOrder();
-        $status = $order->getData('ghn_status');
-        $trackingCode = $order->getData('tracking_code');
 
-        if ($status && $trackingCode) {
-            $result = $this->cancellation->cancel($trackingCode);
-
-            if ($result) {
-                $order->setData('ghn_canceling_status', self::GHN_SUCCESS_CANCELING_STATUS);
+        if ($order->getData('ghn_status') && $order->getData('tracking_code')) {
+            try {
+                $this->commandPool->get('cancel_order')->execute(['order' => $order]);
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage());
             }
         }
     }

@@ -1,17 +1,28 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Observer;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Synchronizer;
 use Boolfly\GiaoHangNhanh\Model\Config;
+use Boolfly\IntegrationBase\Model\Service\Command\CommandPoolInterface;
+use Exception;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Model\QuoteRepository;
 use Psr\Log\LoggerInterface;
-use Zend_Http_Client_Exception;
 
+/**
+ * Class SalesOrderPlaceAfterObserver
+ *
+ * @package Boolfly\GiaoHangNhanh\Observer
+ */
 class SalesOrderPlaceAfterObserver implements ObserverInterface
 {
     /**
@@ -25,32 +36,29 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
     private $logger;
 
     /**
-     * @var Synchronizer
+     * @var CommandPoolInterface
      */
-    private $synchronizer;
+    private $commandPool;
 
     /**
      * SalesOrderAfterSaveObserver constructor.
      * @param QuoteRepository $quoteRepository
      * @param LoggerInterface $logger
-     * @param Synchronizer $synchronizer
+     * @param CommandPoolInterface $commandPool
      */
     public function __construct(
         QuoteRepository $quoteRepository,
         LoggerInterface $logger,
-        Synchronizer $synchronizer
+        CommandPoolInterface $commandPool
     ) {
         $this->logger = $logger;
         $this->quoteRepository = $quoteRepository;
-        $this->synchronizer = $synchronizer;
+        $this->commandPool = $commandPool;
     }
 
     /**
-     * @inheritDoc
      * @param Observer $observer
      * @throws NoSuchEntityException
-     * @throws LocalizedException
-     * @throws Zend_Http_Client_Exception
      */
     public function execute(Observer $observer)
     {
@@ -60,12 +68,15 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
         if (false !== strpos($order->getShippingMethod(), Config::GHN_CODE)) {
             $quote = $this->quoteRepository->get($order->getQuoteId());
             $shippingAddress = $quote->getShippingAddress();
-            $additionalData = [
-                'district' => $shippingAddress->getDistrict(),
-                'shipping_service_id' => $shippingAddress->getShippingServiceId()
-            ];
-
-            $this->synchronizer->syncOrder($order, $additionalData);
+            try {
+                $this->commandPool->get('synchronize_order')->execute([
+                    'order' => $order,
+                    'district' => $shippingAddress->getDistrict(),
+                    'shipping_service_id' => $shippingAddress->getShippingServiceId()
+                ]);
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage());
+            }
         }
     }
 }

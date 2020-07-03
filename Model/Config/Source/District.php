@@ -1,5 +1,12 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Model\Config\Source;
 
 use Boolfly\GiaoHangNhanh\Model\Config;
@@ -7,6 +14,11 @@ use Magento\Framework\Option\ArrayInterface;
 use Magento\Store\Model\Information;
 use Magento\Store\Model\StoreManagerInterface;
 
+/**
+ * Class District
+ *
+ * @package Boolfly\GiaoHangNhanh\Model\Config\Source
+ */
 class District implements ArrayInterface
 {
     /**

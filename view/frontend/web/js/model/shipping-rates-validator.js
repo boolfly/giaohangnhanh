@@ -8,26 +8,16 @@ define([
 
     return {
         validationErrors: [],
-
-        /**
-         * @param {Object} address
-         * @return {Boolean}
-         */
-        validate: function (address) {
+        validate: function(address) {
             var self = this;
-
             this.validationErrors = [];
-            $.each(validationRules.getRules(), function (field, rule) {
-                var message;
-
+            $.each(validationRules.getRules(), function(field, rule) {
                 if (rule.required && utils.isEmpty(address[field])) {
-                    message = $t('Field ') + field + $t(' is required.');
-
+                    var message = $t('Field ') + field + $t(' is required.');
                     self.validationErrors.push(message);
                 }
             });
-
-            return !this.validationErrors.length;
+            return !Boolean(this.validationErrors.length);
         }
     };
 });

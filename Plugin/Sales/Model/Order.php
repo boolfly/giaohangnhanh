@@ -1,45 +1,68 @@
 <?php declare(strict_types=1);
-
+/************************************************************
+ * *
+ *  * Copyright © Boolfly. All rights reserved.
+ *  * See COPYING.txt for license details.
+ *  *
+ *  * @author    info@boolfly.com
+ * *  @project   Giao hang nhanh
+ */
 namespace Boolfly\GiaoHangNhanh\Plugin\Sales\Model;
 
-use Boolfly\GiaoHangNhanh\Model\Api\Rest\Service\Order\Tracker;
-use Magento\Framework\Exception\LocalizedException;
-use Magento\Framework\Exception\NoSuchEntityException;
+use Boolfly\GiaoHangNhanh\Model\Service\Helper\SubjectReader;
+use Boolfly\IntegrationBase\Model\Service\Command\CommandPoolInterface;
+use Exception;
 use Magento\Sales\Model\Order as MageOrder;
-use Zend_Http_Client_Exception;
+use Psr\Log\LoggerInterface;
 
+/**
+ * Class Order
+ *
+ * @package Boolfly\GiaoHangNhanh\Plugin\Sales\Model
+ */
 class Order
 {
+    const DEFAULT_ORDER_STATUS = 'ReadyToPick';
+
     /**
-     * @var Tracker
+     * @var CommandPoolInterface
      */
-    private $tracker;
+    private $commandPool;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * Order constructor.
-     * @param Tracker $tracker
+     * @param CommandPoolInterface $commandPool
+     * @param LoggerInterface $logger
      */
-    public function __construct(Tracker $tracker)
-    {
-        $this->tracker = $tracker;
+    public function __construct(
+        CommandPoolInterface $commandPool,
+        LoggerInterface $logger
+    ) {
+        $this->commandPool = $commandPool;
+        $this->logger = $logger;
     }
 
     /**
      * @param MageOrder $subject
      * @param $result
      * @return bool
-     * @throws LocalizedException
-     * @throws NoSuchEntityException
-     * @throws Zend_Http_Client_Exception
      */
     public function afterCanCancel(MageOrder $subject, $result)
     {
-        $trackingCode = $subject->getData('tracking_code');
-        $status = $subject->getData('ghn_status');
-
-        if ($status && $trackingCode) {
-            if ($this->tracker->getOrderStatus($trackingCode) != Tracker::DEFAULT_ORDER_STATUS) {
-                $result = false;
+        if ($subject->getData('ghn_status') && $subject->getData('tracking_code')) {
+            try {
+                $commandResult = $this->commandPool->get('get_order_info')->execute(['order' => $subject]);
+                $orderInfo = SubjectReader::readInfo($commandResult->get());
+                if (SubjectReader::readCurrentOrderStatus($orderInfo) != self::DEFAULT_ORDER_STATUS) {
+                    $result = false;
+                }
+            } catch (Exception $e) {
+                $this->logger->error($e->getMessage());
             }
         }
 

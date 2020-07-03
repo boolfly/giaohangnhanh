@@ -1,4 +1,6 @@
-define([], function () {
+define([
+    'Magento_Customer/js/model/customer'
+], function (customer) {
     'use strict';
 
     return {
@@ -6,17 +8,16 @@ define([], function () {
          * @return {Object}
          */
         getRules: function () {
-            return {
-                'country_id': {
-                    'required': true
-                },
-                'region_id': {
-                    'required': true
-                },
-                'district': {
-                    'required': true
-                }
-            };
+            let rules = {};
+            if (!customer.isLoggedIn()) {
+                rules = {
+                    'district': {
+                        'required': true
+                    }
+                };
+            }
+
+            return rules;
         }
     };
 });
