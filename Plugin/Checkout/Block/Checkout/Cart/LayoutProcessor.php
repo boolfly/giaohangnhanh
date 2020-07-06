@@ -10,6 +10,7 @@
 namespace Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout\Cart;
 
 use Boolfly\GiaoHangNhanh\Model\Config;
+use Boolfly\GiaoHangNhanh\Setup\Patch\Data\AddressAttribute;
 use Magento\Checkout\Block\Cart\LayoutProcessor as MageLayoutProcessor;
 
 /**
@@ -36,7 +37,7 @@ class LayoutProcessor
     public function afterProcess(MageLayoutProcessor $subject, $jsLayout)
     {
         $jsLayout['components']['block-summary']['children']['block-shipping']
-        ['children']['address-fieldsets']['children']['district'] = [
+        ['children']['address-fieldsets']['children'][AddressAttribute::DISTRICT] = [
             'component' => 'Boolfly_GiaoHangNhanh/js/view/cart/shipping/district',
             'dataScope' => 'shippingAddress.district',
             'provider' => 'checkoutProvider',
@@ -59,7 +60,7 @@ class LayoutProcessor
                 'setOptions' => 'index = checkoutProvider:dictionaries.district'
             ]
         ];
-        $jsLayout['components']['checkoutProvider']['dictionaries']['district'] = $this->config->getDistrictOptions();
+        $jsLayout['components']['checkoutProvider']['dictionaries'][AddressAttribute::DISTRICT] = $this->config->getDistrictOptions();
         return $jsLayout;
     }
 }

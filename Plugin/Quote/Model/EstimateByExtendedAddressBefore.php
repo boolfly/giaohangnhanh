@@ -50,11 +50,6 @@ class EstimateByExtendedAddressBefore
         /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->quoteRepository->getActive($cartId);
         $district = $address->getExtensionAttributes()->getDistrict();
-
-        if (!$district) {
-            return;
-        }
-
         $quote->getShippingAddress()->setDistrict($district);
     }
 }

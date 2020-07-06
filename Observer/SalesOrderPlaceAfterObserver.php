@@ -59,6 +59,7 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
     /**
      * @param Observer $observer
      * @throws NoSuchEntityException
+     * @throws Exception
      */
     public function execute(Observer $observer)
     {
@@ -76,6 +77,7 @@ class SalesOrderPlaceAfterObserver implements ObserverInterface
                 ]);
             } catch (Exception $e) {
                 $this->logger->error($e->getMessage());
+                throw new Exception(__('This shipping method isn\'t valid now. Please select another shipping method.'));
             }
         }
     }

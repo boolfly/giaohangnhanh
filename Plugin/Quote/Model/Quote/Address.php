@@ -9,6 +9,7 @@
  */
 namespace Boolfly\GiaoHangNhanh\Plugin\Quote\Model\Quote;
 
+use Boolfly\GiaoHangNhanh\Setup\Patch\Data\AddressAttribute;
 use Magento\Quote\Model\Quote\Address as MageQuoteAddress;
 
 /**
@@ -21,7 +22,7 @@ class Address
     public function afterExportCustomerAddress(MageQuoteAddress $subject, $result)
     {
         if ($district = $subject->getDistrict()) {
-            $result->setCustomAttribute('district', $district);
+            $result->setCustomAttribute(AddressAttribute::DISTRICT, $district);
         }
 
         return $result;

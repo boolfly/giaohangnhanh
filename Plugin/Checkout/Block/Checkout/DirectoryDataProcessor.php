@@ -10,6 +10,7 @@
 namespace Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout;
 
 use Boolfly\GiaoHangNhanh\Model\Config;
+use Boolfly\GiaoHangNhanh\Setup\Patch\Data\AddressAttribute;
 use Magento\Checkout\Block\Checkout\DirectoryDataProcessor as MageDirectoryDataProcessor;
 
 /**
@@ -41,7 +42,7 @@ class DirectoryDataProcessor
      */
     public function afterProcess(MageDirectoryDataProcessor $subject, $result)
     {
-        $result['components']['checkoutProvider']['dictionaries']['district'] = $this->config->getDistrictOptions();
+        $result['components']['checkoutProvider']['dictionaries'][AddressAttribute::DISTRICT] = $this->config->getDistrictOptions();
 
         return $result;
     }

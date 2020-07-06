@@ -9,6 +9,7 @@
  */
 namespace Boolfly\GiaoHangNhanh\Model\Service\Request;
 
+use Boolfly\GiaoHangNhanh\Helper\Rate;
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Boolfly\IntegrationBase\Model\Service\ConfigInterface;
 use Boolfly\IntegrationBase\Model\Service\Request\BuilderInterface;
@@ -74,24 +75,32 @@ abstract class AbstractDataBuilder implements BuilderInterface
     protected $baseConfig;
 
     /**
+     * @var Rate
+     */
+    protected $helperRate;
+
+    /**
      * AbstractDataBuilder constructor.
      * @param ConfigInterface $config
      * @param StoreManagerInterface $storeManager
      * @param Information $storeInformation
      * @param AddressFactory $addressFactory
      * @param Config $baseConfig
+     * @param Rate $helperRate
      */
     public function __construct(
         ConfigInterface $config,
         StoreManagerInterface $storeManager,
         Information $storeInformation,
         AddressFactory $addressFactory,
-        Config $baseConfig
+        Config $baseConfig,
+        Rate $helperRate
     ) {
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->storeInformation = $storeInformation;
         $this->addressFactory = $addressFactory;
         $this->baseConfig = $baseConfig;
+        $this->helperRate = $helperRate;
     }
 }

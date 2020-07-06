@@ -7,10 +7,12 @@
  *  * @author    info@boolfly.com
  * *  @project   Giao hang nhanh
  */
+
 namespace Boolfly\GiaoHangNhanh\Model\Service\Request;
 
 use Boolfly\GiaoHangNhanh\Model\Config;
 use Boolfly\GiaoHangNhanh\Model\Service\Helper\SubjectReader;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 
 /**
@@ -24,6 +26,7 @@ class SynchronizeOrderDataBuilder extends AbstractDataBuilder
      * @param array $buildSubject
      * @return array
      * @throws NoSuchEntityException
+     * @throws LocalizedException
      */
     public function build(array $buildSubject)
     {
@@ -48,10 +51,10 @@ class SynchronizeOrderDataBuilder extends AbstractDataBuilder
             self::NOTE_CODE => $this->config->getValue('note_code'),
             self::SERVICE_ID => (int)SubjectReader::readShippingServiceId($buildSubject),
             self::WEIGHT => $order->getWeight() * $weightRate,
-            self::LENGTH => 10,
-            self::WIDTH => 10,
-            self::HEIGHT => 10,
-            self::CO_D_AMOUNT => 0,
+            self::LENGTH => (int)$this->config->getValue('default_length'),
+            self::WIDTH => (int)$this->config->getValue('default_width'),
+            self::HEIGHT => (int)$this->config->getValue('default_height'),
+            self::CO_D_AMOUNT => $this->helperRate->getVndOrderAmount($order, $order->getGrandTotal()),
             self::RETURN_CONTACT_NAME => $storeInfo->getName(),
             self::RETURN_CONTACT_PHONE => $storeInfo->getPhone(),
             self::RETURN_ADDRESS => $storeFormattedAddress,

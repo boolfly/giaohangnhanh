@@ -7,28 +7,19 @@
  *  * @author    info@boolfly.com
  * *  @project   Giao hang nhanh
  */
-namespace Boolfly\GiaoHangNhanh\Setup;
+namespace Boolfly\GiaoHangNhanh\Setup\Patch\Data;
 
 use Magento\Customer\Api\AddressMetadataInterface;
+use Magento\Eav\Model\Config;
 use Magento\Eav\Model\Entity\Attribute\ScopedAttributeInterface;
 use Magento\Eav\Setup\EavSetupFactory;
-use Magento\Eav\Model\Config;
-use Magento\Framework\Setup\InstallDataInterface;
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Setup\Patch\DataPatchInterface;
+use Zend_Validate_Exception;
 
-/**
- * Class InstallData
- *
- * @package Boolfly\GiaoHangNhanh\Setup
- */
-class InstallData implements InstallDataInterface
+class AddressAttribute implements DataPatchInterface
 {
-    /**
-     * Eav setup factory
-     * @var EavSetupFactory
-     */
-    private $eavSetupFactory;
+    const DISTRICT = 'district';
 
     /**
      * @var Config
@@ -36,33 +27,49 @@ class InstallData implements InstallDataInterface
     private $eavConfig;
 
     /**
-     * Init
-     * @param EavSetupFactory $eavSetupFactory
-     * @param Config $eavConfig
+     * @var EavSetupFactory
+     */
+    private $eavSetupFactory;
+
+    /**
+     * AddressAttribute constructor.
+     *
+     * @param Config              $eavConfig
+     * @param EavSetupFactory     $eavSetupFactory
      */
     public function __construct(
-        EavSetupFactory $eavSetupFactory,
-        Config $eavConfig
+        Config $eavConfig,
+        EavSetupFactory $eavSetupFactory
     ) {
-        $this->eavSetupFactory = $eavSetupFactory;
         $this->eavConfig = $eavConfig;
+        $this->eavSetupFactory = $eavSetupFactory;
     }
 
     /**
-     * {@inheritdoc}
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @return array|string[]
      */
-    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    public static function getDependencies()
     {
-        /** @var \Magento\Eav\Setup\EavSetup $eavSetup */
-        $eavSetup = $this->eavSetupFactory->create(['setup' => $setup]);
+        return [];
+    }
 
-        $setup->startSetup();
+    /**
+     * @return array|string[]
+     */
+    public function getAliases()
+    {
+        return [];
+    }
 
-        $attributeCode = 'district';
-        $eavSetup->addAttribute(AddressMetadataInterface::ENTITY_TYPE_ADDRESS, $attributeCode, [
+    /**
+     * @return AddressAttribute|void
+     * @throws LocalizedException|Zend_Validate_Exception
+     */
+    public function apply()
+    {
+        $eavSetup = $this->eavSetupFactory->create();
+
+        $eavSetup->addAttribute(AddressMetadataInterface::ENTITY_TYPE_ADDRESS, self::DISTRICT, [
             'group' => 'General',
             'type' => 'varchar',
             'label' => 'District',
@@ -84,16 +91,14 @@ class InstallData implements InstallDataInterface
             AddressMetadataInterface::ENTITY_TYPE_ADDRESS,
             AddressMetadataInterface::ATTRIBUTE_SET_ID_ADDRESS,
             1,
-            $attributeCode
+            self::DISTRICT
         );
 
-        $district = $this->eavConfig->getAttribute(AddressMetadataInterface::ENTITY_TYPE_ADDRESS, $attributeCode);
+        $district = $this->eavConfig->getAttribute(AddressMetadataInterface::ENTITY_TYPE_ADDRESS, self::DISTRICT);
         $district->setData(
             'used_in_forms',
             ['adminhtml_customer_address','customer_address_edit','customer_register_address']
         );
-        $district->getResource()->save($district);
-
-        $setup->endSetup();
+        $district->save();
     }
 }

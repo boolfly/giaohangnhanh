@@ -7,6 +7,7 @@
  *  * @author    info@boolfly.com
  * *  @project   Giao hang nhanh
  */
+
 namespace Boolfly\GiaoHangNhanh\Plugin\Checkout\Model;
 
 use Magento\Checkout\Api\Data\ShippingInformationInterface;
@@ -59,7 +60,6 @@ class ShippingInformationManagement
         $quote = $this->quoteRepository->getActive($cartId);
         $extensionAttributes = $addressInformation->getExtensionAttributes();
         $shippingAddress = $quote->getShippingAddress();
-        $district = '';
 
         if ($shippingAddress->getDistrict()) {
             return;
@@ -67,20 +67,12 @@ class ShippingInformationManagement
 
         if (!$extensionAttributes->getDistrict()) {
             $customerAddressId = $addressInformation->getShippingAddress()->getCustomerAddressId();
-
-            if ($customerAddressId) {
-                $address = $this->customerAddressFactory->create()->load($customerAddressId);
-
-                if ($address->getId()) {
-                    $district = $address->getDistrict();
-                }
-            }
+            $address = $this->customerAddressFactory->create()->load($customerAddressId);
+            $district = $address->getDistrict();
         } else {
             $district = $extensionAttributes->getDistrict();
         }
 
-        if ($district) {
-            $shippingAddress->setDistrict($district);
-        }
+        $shippingAddress->setDistrict($district);
     }
 }

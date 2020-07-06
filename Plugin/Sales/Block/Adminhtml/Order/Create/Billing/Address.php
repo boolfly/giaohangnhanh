@@ -9,6 +9,7 @@
  */
 namespace Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Billing;
 
+use Boolfly\GiaoHangNhanh\Setup\Patch\Data\AddressAttribute;
 use Magento\Customer\Model\ResourceModel\AddressRepository;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Sales\Block\Adminhtml\Order\Create\Billing\Address as MageAddress;
@@ -45,7 +46,7 @@ class Address
         if ($customerAddressId) {
             try {
                 $customerAddress = $this->addressRepository->getById($customerAddressId);
-                $district = $customerAddress->getCustomAttribute('district');
+                $district = $customerAddress->getCustomAttribute(AddressAttribute::DISTRICT);
 
                 if ($district) {
                     $subject->getCreateOrderModel()->getBillingAddress()->setDistrict($district->getValue());

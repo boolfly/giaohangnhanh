@@ -50,9 +50,6 @@ class TotalsInformationManagement
         }
 
         $district = $addressInformation->getExtensionAttributes()->getDistrict();
-
-        if ($district) {
-            $shippingAddress->setDistrict($district);
-        }
+        $shippingAddress->setDistrict($district);
     }
 }

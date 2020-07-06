@@ -58,16 +58,10 @@ class EstimateByAddressIdBefore
         /** @var \Magento\Quote\Model\Quote $quote */
         $quote = $this->quoteRepository->getActive($cartId);
         $address = $this->customerAddressFactory->create()->load($addressId);
-        $district = '';
 
         if ($address->getId()) {
             $district = $address->getDistrict();
+            $quote->getShippingAddress()->setDistrict($district);
         }
-
-        if (!$district) {
-            return;
-        }
-
-        $quote->getShippingAddress()->setDistrict($district);
     }
 }
