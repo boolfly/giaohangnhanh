@@ -1,0 +1,226 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Magento\Customer\Controller\Address\FormPost" type="Boolfly\GiaoHangNhanh\Controller\Customer\Address\FormPost"/>
+    <type name="Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand">
+        <arguments>
+            <!-- configure the command name via constructor $name argument -->
+            <argument name="name" xsi:type="string">region:generate</argument>
+            <argument name="commandPool" xsi:type="object">GhnCommandPool</argument>
+        </arguments>
+    </type>
+    <type name="Magento\Framework\Console\CommandListInterface">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="generate_region_data" xsi:type="object">
+                    Boolfly\GiaoHangNhanh\Console\GenerateRegionCommand
+                </item>
+            </argument>
+        </arguments>
+    </type>
+    <virtualType name="Magento\Sales\Model\ResourceModel\Order\Grid" type="Magento\Sales\Model\ResourceModel\Grid">
+        <arguments>
+            <argument name="columns" xsi:type="array">
+                <item name="ghn_status" xsi:type="string">sales_order.ghn_status</item>
+                <item name="tracking_code" xsi:type="string">sales_order.tracking_code</item>
+                <item name="ghn_canceling_status" xsi:type="string">sales_order.ghn_canceling_status</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="SaveAddressInformationBefore" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Model\ShippingInformationManagement" sortOrder="22"/>
+    </type>
+    <type name="Magento\Quote\Model\ShippingMethodManagement">
+        <plugin name="EstimateByAddressIdBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByAddressIdBefore" sortOrder="23"/>
+        <plugin name="EstimateByExtendedAddressBefore" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\EstimateByExtendedAddressBefore" sortOrder="23"/>
+    </type>
+    <type name="Magento\Checkout\Model\TotalsInformationManagement">
+        <plugin name="CalculateBefore" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Model\TotalsInformationManagement" sortOrder="22"/>
+    </type>
+    <type name="Magento\Checkout\Block\Checkout\DirectoryDataProcessor">
+        <plugin name="DirectoryDataProcessorAfter" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout\DirectoryDataProcessor" sortOrder="22" />
+    </type>
+    <type name="Magento\Quote\Model\Quote\Address">
+        <plugin name="ExportCustomerAddressAfter" type="Boolfly\GiaoHangNhanh\Plugin\Quote\Model\Quote\Address" sortOrder="42" />
+    </type>
+    <type name="Magento\Shipping\Model\Shipping">
+        <plugin name="CollectRatesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Shipping\Model\Shipping" sortOrder="22" />
+    </type>
+    <type name="Magento\Sales\Model\Order">
+        <plugin name="CanCancelAfter" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Model\Order" sortOrder="12" />
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Address">
+        <plugin name="ShippingAddress-GetFormValuesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Shipping\Address" sortOrder="12" />
+    </type>
+    <type name="Magento\Sales\Block\Adminhtml\Order\Create\Billing\Address">
+        <plugin name="BillingAddress-GetFormValuesBefore" type="Boolfly\GiaoHangNhanh\Plugin\Sales\Block\Adminhtml\Order\Create\Billing\Address" sortOrder="12" />
+    </type>
+    <type name="Magento\Checkout\Block\Cart\LayoutProcessor">
+        <plugin name="ProccessLayoutCartAfter" type="Boolfly\GiaoHangNhanh\Plugin\Checkout\Block\Checkout\Cart\LayoutProcessor" sortOrder="12" />
+    </type>
+    <!--Extensions-->
+    <type name="Boolfly\GiaoHangNhanh\Model\Carrier\GHN">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">GhnCommandPool</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Observer\SalesOrderCancelAfterObserver">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">GhnCommandPool</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Observer\SalesOrderPlaceAfterObserver">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">GhnCommandPool</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Plugin\Sales\Model\Order">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">GhnCommandPool</argument>
+        </arguments>
+    </type>
+    <virtualType name="GhnCommandPool" type="Boolfly\IntegrationBase\Model\Service\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="get_services" xsi:type="string">GetServicesCommand</item>
+                <item name="calculate_rate" xsi:type="string">CalculateRateCommand</item>
+                <item name="cancel_order" xsi:type="string">CancelOrderCommand</item>
+                <item name="get_order_info" xsi:type="string">GetOrderInfoCommand</item>
+                <item name="synchronize_order" xsi:type="string">SynchronizeOrderCommand</item>
+                <item name="get_districts" xsi:type="string">GetDistrictsCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GetServicesCommand" type="Boolfly\GiaoHangNhanh\Model\Service\Command\ServiceCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Request\ShippingDetailsDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">GetServicesTransferFactory</argument>
+            <argument name="client" xsi:type="object">GhnZendHttpClient</argument>
+            <argument name="resultKey" xsi:type="string">services</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CalculateRateCommand" type="Boolfly\GiaoHangNhanh\Model\Service\Command\ServiceCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Request\ShippingDetailsDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">CalculateRateTransferFactory</argument>
+            <argument name="client" xsi:type="object">GhnZendHttpClient</argument>
+            <argument name="resultKey" xsi:type="string">rate</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CancelOrderCommand" type="Boolfly\GiaoHangNhanh\Model\Service\Command\ServiceCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">
+                Boolfly\GiaoHangNhanh\Model\Service\Request\OrderInfoDataBuilder
+            </argument>
+            <argument name="transferFactory" xsi:type="object">CancelOrderTransferFactory</argument>
+            <argument name="client" xsi:type="object">GhnZendHttpClient</argument>
+            <argument name="validator" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Validator\CancelOrderValidator</argument>
+            <argument name="handler" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Response\CancelOrderHandler</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GetOrderInfoCommand" type="Boolfly\GiaoHangNhanh\Model\Service\Command\ServiceCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Request\OrderInfoDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">GetOrderInfoTransferFactory</argument>
+            <argument name="client" xsi:type="object">GhnZendHttpClient</argument>
+            <argument name="resultKey" xsi:type="string">order_info</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="SynchronizeOrderCommand" type="Boolfly\GiaoHangNhanh\Model\Service\Command\ServiceCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Request\SynchronizeOrderDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">SynchronizeOrderTransferFactory</argument>
+            <argument name="client" xsi:type="object">GhnZendHttpClient</argument>
+            <argument name="validator" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Validator\SynchronizeOrderValidator</argument>
+            <argument name="handler" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Response\SynchronizeOrderHandler</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GetDistrictsCommand" type="Boolfly\GiaoHangNhanh\Model\Service\Command\ServiceCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Request\GetDistrictsDataBuilder</argument>
+            <argument name="transferFactory" xsi:type="object">GetDistrictsTransferFactory</argument>
+            <argument name="client" xsi:type="object">GhnZendHttpClient</argument>
+            <argument name="resultKey" xsi:type="string">districts</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GetServicesTransferFactory" type="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="path" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::GETTING_SERVICES_URL</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CalculateRateTransferFactory" type="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="path" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::CALCULATING_FEE_URL</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="CancelOrderTransferFactory" type="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="path" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::CANCELING_ORDER_URL</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GetOrderInfoTransferFactory" type="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="path" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::GETTING_ORDER_INFOR</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="SynchronizeOrderTransferFactory" type="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="path" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::SYNCHRONIZING_ORDER_URL</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GetDistrictsTransferFactory" type="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="path" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::GETTING_DISTRICTS_URL</argument>
+        </arguments>
+    </virtualType>
+    <!--custom logger-->
+    <virtualType name="GhnLogger" type="Boolfly\GiaoHangNhanh\Model\Logger\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">GhnConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Boolfly\GiaoHangNhanh\Model\Logger\VirtualDebug" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/bf_giaohangnhanh.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Boolfly\GiaoHangNhanh\Model\Logger\VirtualLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="debug" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Logger\VirtualDebug</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Boolfly\GiaoHangNhanh\Model\Logger\Logger">
+        <arguments>
+            <argument name="logger" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Logger\VirtualLogger</argument>
+        </arguments>
+    </type>
+    <!--end logger-->
+    <virtualType name="GhnZendHttpClient" type="Boolfly\GiaoHangNhanh\Model\Service\Http\Client\Zend">
+        <arguments>
+            <argument name="logger" xsi:type="object">GhnLogger</argument>
+            <argument name="converter" xsi:type="object">Boolfly\GiaoHangNhanh\Model\Service\Http\Converter\JsonToArray</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="GhnConfig" type="Boolfly\IntegrationBase\Model\Service\Config\Config">
+        <arguments>
+            <argument name="integrationType" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::INTEGRATION_TYPE</argument>
+            <argument name="pathPattern" xsi:type="const">Boolfly\GiaoHangNhanh\Model\Config::DEFAULT_PATH_PATTERN</argument>
+        </arguments>
+    </virtualType>
+    <type name="Boolfly\GiaoHangNhanh\Model\Service\Validator\SynchronizeOrderValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">GhnConfig</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Model\Service\Request\AbstractDataBuilder">
+        <arguments>
+            <argument name="config" xsi:type="object">GhnConfig</argument>
+        </arguments>
+    </type>
+    <type name="Boolfly\GiaoHangNhanh\Model\Service\Http\TransferFactory">
+        <arguments>
+            <argument name="config" xsi:type="object">GhnConfig</argument>
+        </arguments>
+    </type>
+</config>

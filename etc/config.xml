@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <giaohangnhanh_setting>
+            <general>
+                <api_token backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <payment_type>2</payment_type>
+                <calculate_fee_url>CalculateFee</calculate_fee_url>
+                <sync_order_url>CreateOrder</sync_order_url>
+                <get_districts_url>GetDistricts</get_districts_url>
+                <note_code>CHOXEMHANGKHONGTHU</note_code>
+                <get_services_url>FindAvailableServices</get_services_url>
+                <get_order_infor_url>OrderInfo</get_order_infor_url>
+                <cancel_order_url>CancelOrder</cancel_order_url>
+                <debug>1</debug>
+                <sandbox_flag>1</sandbox_flag>
+                <default_height>10</default_height>
+                <default_width>10</default_width>
+                <default_length>10</default_length>
+                <debugReplaceKeys>token</debugReplaceKeys>
+                <giaohangnhanh_url>https://console.ghn.vn/api/v1/apiv3</giaohangnhanh_url>
+                <giaohangnhanh_sandbox_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3</giaohangnhanh_sandbox_url>
+            </general>
+        </giaohangnhanh_setting>
+        <carriers>
+            <giaohangnhanh_express>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Express</model>
+                <name>Giao Hang Nhanh(Express)</name>
+                <title>Giao Hang Nhanh</title>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+            </giaohangnhanh_express>
+            <giaohangnhanh_standard>
+                <active>1</active>
+                <sallowspecific>0</sallowspecific>
+                <model>Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Standard</model>
+                <name>Giao Hang Nhanh(Standard)</name>
+                <title>Giao Hang Nhanh</title>
+                <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
+                <handling_type>F</handling_type>
+            </giaohangnhanh_standard>
+        </carriers>
+    </default>
+</config>

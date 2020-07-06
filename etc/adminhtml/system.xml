@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="carriers" translate="label" type="text" sortOrder="320" showInDefault="1" showInWebsite="1" showInStore="1">
+            <group id="giaohangnhanh" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Giao Hang Nhanh</label>
+                <group id="general" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>General Settings</label>
+                    <attribute type="expanded">1</attribute>
+                    <field id="sandbox_flag" translate="label" type="select" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Sandbox Mode</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>giaohangnhanh_setting/general/sandbox_flag</config_path>
+                    </field>
+                    <field id="api_token" translate="label" type="obscure" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                        <label>Api Token</label>
+                        <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                        <comment>Set token to access giaohangnhanh api.</comment>
+                        <config_path>giaohangnhanh_setting/general/api_token</config_path>
+                    </field>
+                    <field id="payment_type" translate="label" type="select" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Payment Type</label>
+                        <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\PaymentType</source_model>
+                        <config_path>giaohangnhanh_setting/general/payment_type</config_path>
+                    </field>
+                    <field id="note_code" translate="label" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Note Code</label>
+                        <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\NoteCode</source_model>
+                        <config_path>giaohangnhanh_setting/general/note_code</config_path>
+                    </field>
+                    <field id="district" translate="label" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                        <label>Store District</label>
+                        <source_model>Boolfly\GiaoHangNhanh\Model\Config\Source\District</source_model>
+                        <config_path>giaohangnhanh_setting/general/district</config_path>
+                    </field>
+                    <field id="debug" translate="label" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Debug</label>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>giaohangnhanh_setting/general/debug</config_path>
+                    </field>
+                </group>
+                <group id="advanced_settings" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Advanced Settings</label>
+                    <group id="giaohangnhanh_express" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Express Method</label>
+                        <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                            <label>Enabled</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>carriers/giaohangnhanh_express/active</config_path>
+                        </field>
+                        <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                            <label>Method Name</label>
+                            <config_path>carriers/giaohangnhanh_express/name</config_path>
+                        </field>
+                        <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Sort Order</label>
+                            <config_path>carriers/giaohangnhanh_express/sort_order</config_path>
+                        </field>
+                        <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                            <label>Title</label>
+                            <config_path>carriers/giaohangnhanh_express/title</config_path>
+                        </field>
+                        <field id="sallowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                            <label>Ship to Applicable Countries</label>
+                            <frontend_class>shipping-applicable-country</frontend_class>
+                            <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                            <config_path>carriers/giaohangnhanh_express/sallowspecific</config_path>
+                        </field>
+                        <field id="specificcountry" translate="label" type="multiselect" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Ship to Specific Countries</label>
+                            <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                            <can_be_empty>1</can_be_empty>
+                            <config_path>carriers/giaohangnhanh_express/specificcountry</config_path>
+                        </field>
+                        <field id="showmethod" translate="label" type="select" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Show Method if Not Applicable</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <frontend_class>shipping-skip-hide</frontend_class>
+                            <config_path>carriers/giaohangnhanh_express/showmethod</config_path>
+                        </field>
+                        <field id="specificerrmsg" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                            <label>Displayed Error Message</label>
+                            <config_path>carriers/giaohangnhanh_express/specificerrmsg</config_path>
+                        </field>
+                    </group>
+                    <group id="giaohangnhanh_standard" translate="label" type="text" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Standard Method</label>
+                        <field id="active" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                            <label>Enabled</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>carriers/giaohangnhanh_standard/active</config_path>
+                        </field>
+                        <field id="name" translate="label" type="text" sortOrder="3" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                            <label>Method Name</label>
+                            <config_path>carriers/giaohangnhanh_standard/name</config_path>
+                        </field>
+                        <field id="sort_order" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Sort Order</label>
+                            <config_path>carriers/giaohangnhanh_standard/sort_order</config_path>
+                        </field>
+                        <field id="title" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                            <label>Title</label>
+                            <config_path>carriers/giaohangnhanh_standard/title</config_path>
+                        </field>
+                        <field id="sallowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0" canRestore="1">
+                            <label>Ship to Applicable Countries</label>
+                            <frontend_class>shipping-applicable-country</frontend_class>
+                            <source_model>Magento\Shipping\Model\Config\Source\Allspecificcountries</source_model>
+                            <config_path>carriers/giaohangnhanh_standard/sallowspecific</config_path>
+                        </field>
+                        <field id="specificcountry" translate="label" type="multiselect" sortOrder="91" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Ship to Specific Countries</label>
+                            <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                            <can_be_empty>1</can_be_empty>
+                            <config_path>carriers/giaohangnhanh_standard/specificcountry</config_path>
+                        </field>
+                        <field id="showmethod" translate="label" type="select" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="0">
+                            <label>Show Method if Not Applicable</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <frontend_class>shipping-skip-hide</frontend_class>
+                            <config_path>carriers/giaohangnhanh_standard/showmethod</config_path>
+                        </field>
+                        <field id="specificerrmsg" translate="label" type="textarea" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
+                            <label>Displayed Error Message</label>
+                            <config_path>carriers/giaohangnhanh_standard/specificerrmsg</config_path>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>

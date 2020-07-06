@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="boolfly_giaohangnhanh_district" resource="default" engine="innodb"
+           comment="Boolfly giao hang nhanh district table">
+        <column xsi:type="int" name="entity_id" padding="11" unsigned="false" nullable="false" identity="true" comment="Entity ID"/>
+        <column xsi:type="int" name="district_id" unsigned="true" nullable="false" padding="11" comment="District Id"/>
+        <column xsi:type="varchar" name="province_id" nullable="false" length="32" comment="Province Id"/>
+        <column xsi:type="varchar" name="district_name" nullable="false" length="255" comment="District Name"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+    <table name="sales_order" resource="sales" engine="innodb">
+        <column xsi:type="smallint" name="ghn_status" nullable="true" default="0" unsigned="false" identity="false"
+                comment="Giaohangnhanh status"/>
+        <column xsi:type="varchar" name="tracking_code" nullable="true" length="255" comment="Tracking Code"/>
+        <column xsi:type="smallint" name="ghn_canceling_status" nullable="true" default="0" unsigned="false" identity="false"
+                comment="Giaohangnhanh canceling status"/>
+    </table>
+    <table name="quote_address" resource="checkout" engine="innodb">
+        <column xsi:type="varchar" name="district" nullable="true" length="11" comment="District"/>
+        <column xsi:type="varchar" name="shipping_service_id" nullable="true" length="11" comment="Shipping Service ID"/>
+    </table>
+    <table name="sales_order_grid" resource="sales" engine="innodb">
+        <column xsi:type="smallint" name="ghn_status" nullable="true" default="0" unsigned="false" identity="false"
+                comment="Giaohangnhanh status"/>
+        <column xsi:type="varchar" name="tracking_code" nullable="true" length="255" comment="Tracking Code"/>
+        <column xsi:type="smallint" name="ghn_canceling_status" nullable="true" default="0" unsigned="false" identity="false"
+                comment="Giaohangnhanh canceling status"/>
+    </table>
+</schema>

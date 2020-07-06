@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="sales_order_place_after">
+        <observer name="sync_order_after_placing" instance="Boolfly\GiaoHangNhanh\Observer\SalesOrderPlaceAfterObserver"/>
+    </event>
+    <event name="order_cancel_after">
+        <observer name="cancel_giaohangnhanh_shipment_for_order" instance="Boolfly\GiaoHangNhanh\Observer\SalesOrderCancelAfterObserver"/>
+    </event>
+</config>

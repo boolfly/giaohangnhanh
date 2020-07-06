@@ -1,0 +1,29 @@
+{
+    "boolfly_giaohangnhanh_district": {
+        "column": {
+            "entity_id": true,
+            "district_id": true,
+            "province_id": true,
+            "district_name": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "sales_order": {
+        "column": {
+            "ghn_status": true
+        }
+    },
+    "quote_address": {
+        "column": {
+            "district": true,
+            "shipping_service_id": true
+        }
+    },
+    "sales_order_grid": {
+        "column": {
+            "ghn_status": true
+        }
+    }
+}
