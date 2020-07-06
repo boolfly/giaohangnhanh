@@ -21,11 +21,11 @@ We need to make sure our website supporting Vietnamese Dong.
 
 Log in to Admin, **STORES > Configurations > GENERAL > Currency Setup > Currency Options > Allowed Currencies**. Make sure the Vietnamese Dong is selected.
 
-![GiaoHangNhanh currency](https://image.prntscr.com/image/8ED4t6WaQKKz8M52s1Geiw.png)
+![GiaoHangNhanh currency](https://github.com/boolfly/wiki/blob/master/magento/magento2/images/giaohangnhanh/currency-setup.png)
 
 Go to Currency Rates, **STORES > Currency > Currency Rates**
 
-![GiaoHangNhanh currency](https://image.prntscr.com/image/JTrmMIRsQE2MwJdk4rslsg.png)
+![GiaoHangNhanh currency](https://github.com/boolfly/wiki/blob/master/magento/magento2/images/giaohangnhanh/currency-rate.png)
 
 ### Config Store Information
 GiaoHangNhanh extension supports Vietnam store only.
@@ -37,9 +37,9 @@ Log in to Admin, **STORES > Configurations > GENERAL > General > Store Informati
 ### Config API
 Log in to Admin, **STORES > Configurations > SALES > Shipping Methods > Giao Hang Nhanh**
 
-![GiaoHangNhanh Configuration](https://image.prntscr.com/image/6SGprE_CTm2sGHwQI0NBXQ.png)
+![GiaoHangNhanh Configuration](https://github.com/boolfly/wiki/blob/master/magento/magento2/images/giaohangnhanh/config-1.png)
 
-![GiaoHangNhanh Configuration](https://image.prntscr.com/image/rwRqazVlQYOcF_PwwivkTQ.png)
+![GiaoHangNhanh Configuration](https://github.com/boolfly/wiki/blob/master/magento/magento2/images/giaohangnhanh/config-2.png)
 
 Read more here:
 
@@ -64,7 +64,7 @@ GiaoHangNhanh extension consists of Giao Hang Nhanh Express and Giao Hang Nhanh 
 ### Checkout
  After enabling this method, go to the checkout, we can see this method.
 
- ![GiaoHangNhanh Checkout](https://image.prntscr.com/image/AT57c1bTSMyfSQ5D6ZfGdQ.png)
+ ![GiaoHangNhanh Checkout](https://github.com/boolfly/wiki/blob/master/magento/magento2/images/giaohangnhanh/checkout.png)
 
 Contribution
 ---
@@ -87,4 +87,5 @@ Magento 2 Extensions
 Support
 ---
 Need help settings up or want to customize this extension to meet your business needs? Please email boolfly.inc@gmail.com and if we like your idea we will add this feature for free or at a discounted rate.
+
 
