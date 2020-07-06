@@ -14,6 +14,9 @@
                 <cancel_order_url>CancelOrder</cancel_order_url>
                 <debug>1</debug>
                 <sandbox_flag>1</sandbox_flag>
+                <default_height>10</default_height>
+                <default_width>10</default_width>
+                <default_length>10</default_length>
                 <debugReplaceKeys>token</debugReplaceKeys>
                 <giaohangnhanh_url>https://console.ghn.vn/api/v1/apiv3</giaohangnhanh_url>
                 <giaohangnhanh_sandbox_url>https://dev-online-gateway.ghn.vn/apiv3-api/api/v1/apiv3</giaohangnhanh_sandbox_url>
@@ -34,7 +37,6 @@
                 <sallowspecific>0</sallowspecific>
                 <model>Boolfly\GiaoHangNhanh\Model\Carrier\GHN\Standard</model>
                 <name>Giao Hang Nhanh(Standard)</name>
-                <price>10.00</price>
                 <title>Giao Hang Nhanh</title>
                 <specificerrmsg>This shipping method is not available. To use this shipping method, please contact us.</specificerrmsg>
                 <handling_type>F</handling_type>
